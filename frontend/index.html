@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OERMS - Welcome</title>
+    <style>
+        /* Simple redirect logic. In a real app this would go to a home page or login */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f6f9;
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center;">
+        <h2>Welcome to the Online Examination and Result Management System</h2>
+        <p>Redirecting to login...</p>
+        <script>
+            setTimeout(function() {
+                window.location.href = 'login.html';
+            }, 1000);
+        </script>
+    </div>
+</body>
+</html>

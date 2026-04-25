@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results - OERMS</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-university"></i> OERMS
+        </div>
+
+        <ul class="list-unstyled components">
+            <p class="text-center mb-0 border-bottom pb-3"><small>Main Navigation</small></p>
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="users.html"><i class="fas fa-users"></i> Users</a></li>
+            <li><a href="exams.html"><i class="fas fa-file-alt"></i> Exams</a></li>
+            <li><a href="questions.html"><i class="fas fa-question-circle"></i> Questions</a></li>
+            <li><a href="exam-session.html"><i class="fas fa-laptop-code"></i> Exam Sessions</a></li>
+            <li class="active"><a href="results.html"><i class="fas fa-chart-bar"></i> Results</a></li>
+            <li><a href="feedback.html"><i class="fas fa-comments"></i> Feedback</a></li>
+            <li><a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a></li>
+        </ul>
+
+        <ul class="list-unstyled mt-auto mb-4 w-100 position-absolute bottom-0">
+            <li><a href="login.html" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="content">
+        <!-- Top Navbar -->
+        <nav class="top-navbar">
+            <button type="button" id="sidebarCollapse" class="navbar-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="user-profile-nav">
+                <span class="d-none d-md-block text-muted">Welcome, <strong>Lecturer User</strong></span>
+                <div class="avatar">L</div>
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h3 mb-0 text-gray-800">Result Management</h2>
+                <button class="btn btn-outline-primary shadow-sm"><i class="fas fa-file-export me-1"></i> Export Results</button>
+            </div>
+
+            <!-- Filter Card -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body py-2">
+                    <div class="row align-items-center">
+                        <div class="col-md-auto">
+                            <strong>Filter by Exam:</strong>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select form-select-sm">
+                                <option>Data Structures Midterm</option>
+                                <option>Database Systems Final</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Table Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Student Results Overview</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 text-center align-middle">
+                            <thead>
+                                <tr>
+                                    <th class="text-start">Student Name</th>
+                                    <th>Exam</th>
+                                    <th>Score</th>
+                                    <th>Percentage</th>
+                                    <th>Grade</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultsTableBody">
+                                <!-- Data populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Student View Example (Mockup to show how it might look for a student) -->
+            <div class="card shadow-sm border-start border-primary border-4 mt-5">
+                <div class="card-header bg-white">
+                    <h6 class="m-0 font-weight-bold text-secondary"><i class="fas fa-user-graduate me-2"></i>Student Result View (Demo)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 border-end">
+                            <p class="text-muted mb-1">Course</p>
+                            <h5>CS304 Database Systems</h5>
+                        </div>
+                        <div class="col-md-3 border-end">
+                            <p class="text-muted mb-1">Score</p>
+                            <h5 class="text-primary">92 / 100</h5>
+                        </div>
+                        <div class="col-md-3 border-end">
+                            <p class="text-muted mb-1">Percentage</p>
+                            <h5>92%</h5>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="text-muted mb-1">Grade</p>
+                            <h4 class="text-success fw-bold">A+</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Manual Grade Adjustment Modal -->
+    <div class="modal fade" id="adjustGradeModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title">Adjust Student Grade</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="gradeForm">
+                <div class="mb-3">
+                    <label class="form-label">Student Name</label>
+                    <input type="text" class="form-control" id="adjStudentName" disabled>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Exam</label>
+                    <input type="text" class="form-control" id="adjExamName" disabled>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Score</label>
+                        <input type="number" class="form-control" id="adjScore" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Out of</label>
+                        <input type="number" class="form-control" value="100" disabled>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Reason for adjustment</label>
+                    <textarea class="form-control" rows="2" placeholder="e.g. Question 4 was evaluated manually" required></textarea>
+                </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="alert('Grade adjusted successfully!'); bootstrap.Modal.getInstance(document.getElementById('adjustGradeModal')).hide();">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Scripts -->
+    <script src="js/mock-data.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tbody = document.getElementById('resultsTableBody');
+            if (typeof mockData !== 'undefined') {
+                mockData.results.forEach(res => {
+                    
+                    let gradeClass = 'text-dark';
+                    if(res.grade.includes('A')) gradeClass = 'text-success fw-bold';
+                    else if(res.grade.includes('C')) gradeClass = 'text-warning fw-bold';
+                    else if(res.grade.includes('F')) gradeClass = 'text-danger fw-bold';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="text-start fw-bold">${res.student}</td>
+                        <td>${res.exam}</td>
+                        <td>${res.score} / ${res.total}</td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: ${res.percentage}%;" aria-valuenow="${res.percentage}" aria-valuemin="0" aria-valuemax="100">${res.percentage}%</div>
+                            </div>
+                        </td>
+                        <td class="${gradeClass}">${res.grade}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="openAdjustModal('${res.student}', '${res.exam}', ${res.score})" title="Adjust Score"><i class="fas fa-edit"></i> Edit</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        });
+
+        function openAdjustModal(student, exam, score) {
+            document.getElementById('adjStudentName').value = student;
+            document.getElementById('adjExamName').value = exam;
+            document.getElementById('adjScore').value = score;
+            new bootstrap.Modal(document.getElementById('adjustGradeModal')).show();
+        }
+    </script>
+</body>
+</html>
