@@ -1,43 +1,43 @@
-// mock-data.js - Dummy JSON data to populate the UI
+// mock data for UI design - 
 
 const mockData = {
     dashboardStats: {
-        totalStudents: 1245,
-        totalExams: 42,
-        activeSessions: 3,
-        resultsPublished: 156
+        totalStudents: 345,
+        totalExams: 12,
+        activeSessions: 1,
+        resultsPublished: 89
     },
-    
+
     users: [
-        { id: 'U1001', username: 'johndoe', role: 'Student', email: 'john@university.edu', status: 'Active' },
-        { id: 'U1002', username: 'janedoe', role: 'Lecturer', email: 'jane@university.edu', status: 'Active' },
-        { id: 'U1003', username: 'admin01', role: 'Admin', email: 'admin@university.edu', status: 'Active' },
-        { id: 'U1004', username: 'bobbysmith', role: 'Student', email: 'bobby@university.edu', status: 'Inactive' },
-        { id: 'U1005', username: 'sarahconnor', role: 'Student', email: 'sarah@university.edu', status: 'Active' }
+        { id: 'S104592', username: 'jsmith92', role: 'Student', email: 'j.smith92@university.edu', status: 'Active' },
+        { id: 'L83011', username: 'dr_atv', role: 'Lecturer', email: 'a.turing@university.edu', status: 'Active' },
+        { id: 'A001', username: 'sysadmin', role: 'Admin', email: 'it-support@university.edu', status: 'Active' },
+        { id: 'S104593', username: 'mwilliams', role: 'Student', email: 'm.williams@university.edu', status: 'Inactive' },
+        { id: 'S104594', username: 'kchen', role: 'Student', email: 'k.chen@university.edu', status: 'Active' }
     ],
 
     exams: [
-        { id: 'EX201', title: 'Data Structures Midterm', course: 'CS201', duration: '120 mins', marks: 100, date: '2026-05-15', status: 'Upcoming' },
-        { id: 'EX202', title: 'Database Systems Final', course: 'CS304', duration: '180 mins', marks: 100, date: '2026-04-20', status: 'Completed' },
-        { id: 'EX203', title: 'Software Engineering Quiz 1', course: 'CS401', duration: '45 mins', marks: 20, date: '2026-04-25', status: 'Active' },
-        { id: 'EX204', title: 'Machine Learning Basics', course: 'CS450', duration: '90 mins', marks: 50, date: '2026-05-02', status: 'Draft' }
+        { id: 'EX101', title: 'CS204 Object Oriented Programming Final', course: 'CS204', duration: '180 mins', marks: 100, date: '2026-05-18', status: 'Upcoming' },
+        { id: 'EX102', title: 'CS301 Algorithms & Data Structures Lab', course: 'CS301', duration: '120 mins', marks: 50, date: '2026-04-20', status: 'Completed' },
+        { id: 'EX103', title: 'CS204 Midterm Assessment', course: 'CS204', duration: '60 mins', marks: 30, date: '2026-03-15', status: 'Completed' },
+        { id: 'EX104', title: 'CS450 Software Engineering Project Defense', course: 'CS450', duration: '45 mins', marks: 100, date: '2026-05-10', status: 'Draft' }
     ],
 
     questions: [
-        { id: 'Q001', text: 'What does HTML stand for?', type: 'MCQ', marks: 2, options: ['Hyper Text Markup Language', 'High Tech Modern Language', 'Hyperlink and Text Markup Language', 'Home Tool Markup Language'], correct: 'A' },
-        { id: 'Q002', text: 'Which data structure uses LIFO?', type: 'MCQ', marks: 2, options: ['Queue', 'Stack', 'Tree', 'Graph'], correct: 'B' },
-        { id: 'Q003', text: 'Explain the concept of Polymorphism in OOP.', type: 'Short Answer', marks: 5, options: [], correct: '' }
+        { id: 'Q001', text: 'Which of the following access modifiers makes a member visible only within its own class?', type: 'MCQ', marks: 2, options: ['public', 'protected', 'private', 'default'], correct: 'C' },
+        { id: 'Q002', text: 'Explain the difference between method overloading and method overriding in Java, providing a short code example for each.', type: 'Short Answer', marks: 10, options: [], correct: '' },
+        { id: 'Q003', text: 'What is the primary purpose of an abstract class in Object Oriented Design?', type: 'MCQ', marks: 2, options: ['To prevent inheritance', 'To provide a base class with some default implementation', 'To create instances directly', 'To allow multiple inheritance in Java'], correct: 'B' }
     ],
 
     results: [
-        { student: 'John Doe', exam: 'Data Structures Midterm', score: 85, total: 100, percentage: 85, grade: 'A' },
-        { student: 'Sarah Connor', exam: 'Database Systems Final', score: 92, total: 100, percentage: 92, grade: 'A+' },
-        { student: 'Bobby Smith', exam: 'Database Systems Final', score: 65, total: 100, percentage: 65, grade: 'C' }
+        { student: 'James Smith', exam: 'CS204 Midterm Assessment', score: 26, total: 30, percentage: 86.6, grade: 'A' },
+        { student: 'Kevin Chen', exam: 'CS204 Midterm Assessment', score: 28, total: 30, percentage: 93.3, grade: 'A+' },
+        { student: 'Mary Williams', exam: 'CS204 Midterm Assessment', score: 18, total: 30, percentage: 60.0, grade: 'C' }
     ],
 
     notifications: [
-        { id: 1, title: 'System Maintenance', message: 'The system will be down for maintenance this Sunday from 2 AM to 4 AM.', date: '2026-04-24', type: 'warning' },
-        { id: 2, title: 'Results Published', message: 'Results for Database Systems Final have been published.', date: '2026-04-23', type: 'success' },
-        { id: 3, title: 'New Exam Scheduled', message: 'Machine Learning Basics has been scheduled for May 2nd.', date: '2026-04-22', type: 'info' }
+        { id: 1, title: 'Server Maintenance Window', message: 'The examination server will undergo routine maintenance and security patching on Saturday, May 2nd, from 00:00 to 04:00 AM. Please ensure all sessions are saved before this period.', date: '2026-04-24', type: 'warning' },
+        { id: 2, title: 'Final Grades Published', message: 'The final results for CS301 Algorithms & Data Structures have been verified by the examination board and are now published on your dashboard.', date: '2026-04-23', type: 'success' },
+        { id: 3, title: 'Room Change for CS204 Final', message: 'Please be advised that the venue for the CS204 Object Oriented Programming Final Examination has been moved from Hall A to the Main Computing Laboratory.', date: '2026-04-22', type: 'info' }
     ]
 };
