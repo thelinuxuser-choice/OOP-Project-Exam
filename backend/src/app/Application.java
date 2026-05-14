@@ -28,7 +28,7 @@ public class Application {
         public void addResourceHandlers(ResourceHandlerRegistry registry) {
             // Serve everything from the frontend directory
             registry.addResourceHandler("/**")
-                    .addResourceLocations("file:frontend/");
+                    .addResourceLocations("file:../frontend/");
         }
     }
 }

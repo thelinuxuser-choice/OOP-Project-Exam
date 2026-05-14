@@ -1,0 +1,14 @@
+model/ShortAnswerQuestion.class
+app/Application$WebConfig.class
+util/FileHandler.class
+model/Course.class
+controller/ExamController.class
+service/CourseService.class
+app/Application.class
+model/Exam.class
+controller/CourseController.class
+controller/QuestionController.class
+model/MCQQuestion.class
+service/QuestionService.class
+model/Question.class
+service/ExamService.class
