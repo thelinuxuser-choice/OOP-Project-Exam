@@ -1,0 +1,5 @@
+Q002|EX001|Explain Polymorphism in OOP|SHORT|NULL|runtime method overriding|15
+Q002|EX001|Explain polymorphism|SHORT|NULL|runtime method overriding|10
+Q713|EX001|QQQ|MCQ|2,3,3|3|3
+Q448|EX003|test|MCQ|2,3,4|4|1
+Q260|EX005|2e2e2e|MCQ|2,3|2|1
