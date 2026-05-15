@@ -1,6 +1,5 @@
-// main.js - Shared application logic
-
 document.addEventListener('DOMContentLoaded', function() {
+
     // Sidebar toggle functionality
     const sidebarCollapse = document.getElementById('sidebarCollapse');
     const sidebar = document.getElementById('sidebar');
@@ -9,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebarCollapse.addEventListener('click', function() {
             sidebar.classList.toggle('active');
             
-            // Adjust content on larger screens if needed
             if (window.innerWidth > 768) {
                 const content = document.getElementById('content');
                 if (sidebar.classList.contains('active')) {
@@ -25,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Set active class on sidebar based on current page
+    // Active page highlight
     const currentPath = window.location.pathname.split('/').pop();
     const navLinks = document.querySelectorAll('#sidebar ul li a');
     
@@ -35,13 +33,31 @@ document.addEventListener('DOMContentLoaded', function() {
             link.parentElement.classList.add('active');
         }
     });
+
+    // ===============================
+    // ROLE-BASED SIDEBAR NAVIGATION
+    // ===============================
+    const role = localStorage.getItem("role");
+
+    const usersLinks = document.querySelectorAll('a[href="users.html"]');
+
+    usersLinks.forEach(link => {
+        if (role === "ADMIN") {
+            link.setAttribute("href", "admin-users.html");
+        } else {
+            link.setAttribute("href", "users.html");
+        }
+    });
+
 });
 
-// Utility function to simulate fetching data (can be replaced with real AJAX/fetch in JSP later)
-function simulateFetch(data, delay = 500) {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve(data);
-        }, delay);
-    });
+// ===============================
+// LOGOUT
+// ===============================
+function logout() {
+
+    localStorage.removeItem("userId");
+    localStorage.removeItem("role");
+
+    window.location.href = "login.html";
 }
