@@ -28,7 +28,12 @@ public class Application {
         public void addResourceHandlers(ResourceHandlerRegistry registry) {
             // Serve everything from the frontend directory
             registry.addResourceHandler("/**")
-                    .addResourceLocations("file:../frontend/");
+                    .addResourceLocations("file:frontend/", "file:../frontend/");
+        }
+
+        @Override
+        public void addViewControllers(org.springframework.web.servlet.config.annotation.ViewControllerRegistry registry) {
+            registry.addViewController("/").setViewName("forward:/index.html");
         }
     }
 }
