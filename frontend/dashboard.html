@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - UniExam Portal</title>
+    <title>Dashboard - OERMS</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -14,13 +13,12 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
     <!-- Sidebar Layout -->
     <nav id="sidebar">
         <div class="sidebar-header">
-            <i class="fas fa-university"></i> UniExam Portal
+            <i class="fas fa-university"></i> OERMS
         </div>
 
         <ul class="list-unstyled components">
@@ -53,7 +51,7 @@
 
         <ul class="list-unstyled mt-auto mb-4 w-100 position-absolute bottom-0">
             <li>
-                <a href="login.html" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <a href="#" onclick="logout()" class="text-danger"> <i class="fas fa-sign-out-alt"></i> Logout</a>
             </li>
         </ul>
     </nav>
@@ -66,8 +64,10 @@
                 <i class="fas fa-bars"></i>
             </button>
             <div class="user-profile-nav">
-                <span class="d-none d-md-block text-muted">Welcome, <strong>Admin User</strong></span>
-                <div class="avatar">A</div>
+                <span class="d-none d-md-block text-muted">
+                Welcome, <strong id="navUserName">User</strong>
+                </span>
+                <div class="avatar" id="navAvatar">U</div>
             </div>
         </nav>
 
@@ -75,8 +75,7 @@
         <div class="page-content">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="h3 mb-0 text-gray-800">Dashboard Overview</h2>
-                <button class="btn btn-primary btn-sm shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i>
-                    Generate Report</button>
+                <button class="btn btn-primary btn-sm shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</button>
             </div>
 
             <!-- Stats Row -->
@@ -154,7 +153,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <!-- Quick Actions Row -->
             <div class="row">
                 <div class="col-12">
@@ -167,17 +166,17 @@
                                 <!-- Populated via JS or mock data -->
                                 <div class="list-group-item px-0">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-1 text-success"><i class="fas fa-check-circle me-2"></i>Final Grades Published</h6>
-                                        <small class="text-muted">2 days ago</small>
+                                        <h6 class="mb-1 text-success"><i class="fas fa-check-circle me-2"></i>Results Published</h6>
+                                        <small class="text-muted">3 days ago</small>
                                     </div>
-                                    <p class="mb-1 text-muted small">The final results for CS301 Algorithms & Data Structures have been verified and are now published.</p>
+                                    <p class="mb-1 text-muted small">Results for Database Systems Final have been published.</p>
                                 </div>
                                 <div class="list-group-item px-0">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-1 text-info"><i class="fas fa-info-circle me-2"></i>Room Change for CS204 Final</h6>
+                                        <h6 class="mb-1 text-info"><i class="fas fa-info-circle me-2"></i>New Exam Scheduled</h6>
                                         <small class="text-muted">4 days ago</small>
                                     </div>
-                                    <p class="mb-1 text-muted small">Please be advised that the venue for the CS204 Object Oriented Programming Final Examination has been moved.</p>
+                                    <p class="mb-1 text-muted small">Machine Learning Basics has been scheduled for May 2nd.</p>
                                 </div>
                             </div>
                         </div>
@@ -190,10 +189,50 @@
 
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+   <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const params = new URLSearchParams(window.location.search);
+
+            // Read from URL
+            let userId = params.get("userId");
+            let role = params.get("role");
+
+            // Save ONLY if values exist (prevents overwrite with null)
+            if (userId && role) {
+                localStorage.setItem("userId", userId);
+                localStorage.setItem("role", role.toUpperCase());
+            }
+
+            // Always read from localStorage
+            userId = localStorage.getItem("userId");
+            role = localStorage.getItem("role");
+
+            // Security check
+            if (!userId || !role) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            // =========================
+            // UI UPDATE (IMPORTANT FIX)
+            // =========================
+            const navUserName = document.getElementById("navUserName");
+            const navAvatar = document.getElementById("navAvatar");
+
+            if (navUserName) {
+                navUserName.innerText = role; // or userId if you prefer
+            }
+
+            if (navAvatar) {
+                navAvatar.innerText = role.charAt(0);
+            }
+
+        });
+    </script>
     <!-- Custom Scripts -->
     <script src="js/mock-data.js"></script>
     <script src="js/main.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
-
 </html>
