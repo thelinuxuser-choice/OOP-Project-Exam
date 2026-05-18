@@ -6,6 +6,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.context.annotation.Bean;
+import java.io.File;
 
 /**
  * Main application class to start the Spring Boot web server.
@@ -26,14 +30,24 @@ public class Application {
     public static class WebConfig implements WebMvcConfigurer {
         @Override
         public void addResourceHandlers(ResourceHandlerRegistry registry) {
-            // Serve everything from the frontend directory
+            String frontendPath = "file:C:/Users/SHENAL CHANDUPA/Desktop/OOP Project/OOP-Project-Exam/frontend/";
             registry.addResourceHandler("/**")
-                    .addResourceLocations("file:frontend/", "file:../frontend/");
+                    .addResourceLocations(frontendPath, "file:frontend/", "file:../frontend/");
         }
 
         @Override
         public void addViewControllers(org.springframework.web.servlet.config.annotation.ViewControllerRegistry registry) {
             registry.addViewController("/").setViewName("forward:/index.html");
+        }
+
+        @Bean
+        public WebServerFactoryCustomizer<TomcatServletWebServerFactory> servletContainer() {
+            return server -> {
+                File webapp = new File("C:\\Users\\SHENAL CHANDUPA\\Desktop\\OOP Project\\OOP-Project-Exam\\backend\\src\\main\\webapp");
+                if (webapp.exists()) {
+                    server.setDocumentRoot(webapp);
+                }
+            };
         }
     }
 }
