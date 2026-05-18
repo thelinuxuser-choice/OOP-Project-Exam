@@ -1,98 +1,104 @@
-package controller;
+package com.rashmi.onlineexam.controller;
 
-import model.Exam;
-import service.ExamService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import com.rashmi.onlineexam.model.Attempt;
+import com.rashmi.onlineexam.model.ScheduledExam;
+import com.rashmi.onlineexam.repository.ExamRepository;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Controller class to expose Exam management operations via HTTP endpoints.
- */
-@CrossOrigin(origins = "*")
-@RestController
-@RequestMapping("/exams")
+@Controller
+@RequestMapping("/exam")
 public class ExamController {
 
-    private final ExamService examService;
+    private final ExamRepository examRepository;
 
-    @Autowired
-    public ExamController(ExamService examService) {
-        this.examService = examService;
+    public ExamController(ExamRepository examRepository) {
+        this.examRepository = examRepository;
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<String> addExam(@RequestBody java.util.Map<String, Object> payload) {
-        try {
-            String id = "EX" + System.currentTimeMillis(); // Simple ID generation
-            if (payload.containsKey("id") && !((String)payload.get("id")).isEmpty()) {
-                id = (String) payload.get("id"); // Use provided ID if available
-            }
-            String title = (String) payload.get("title");
-            String courseCode = (String) payload.get("courseCode");
-            int duration = Integer.parseInt(payload.get("duration").toString());
-            int marks = Integer.parseInt(payload.get("marks").toString());
-            String date = (String) payload.get("date");
-            String status = (String) payload.get("status");
-            String instructions = (String) payload.getOrDefault("instructions", "None");
+    // LIST ALL EXAMS
+    @GetMapping("/list")
+    public String listExams(Model model) {
+        model.addAttribute("exams", examRepository.getAllExams());
+        return "exams-list";
+    }
 
-            Exam exam = new Exam(id, title, courseCode, duration, marks, date, status, instructions);
-            examService.addExam(exam);
-            return ResponseEntity.ok("Exam added successfully.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Invalid exam format");
+    // SHOW SCHEDULE FORM
+    @GetMapping("/schedule")
+    public String showScheduleForm(Model model) {
+        model.addAttribute("exam", new ScheduledExam());
+        return "schedule-exam";
+    }
+
+    // SAVE NEW EXAM
+    @PostMapping("/schedule")
+    public String saveExam(@ModelAttribute ScheduledExam exam) {
+        exam.setExamId("EX" + System.currentTimeMillis() % 100000);
+        if (exam.getStatus() == null || exam.getStatus().trim().isEmpty()) {
+            exam.setStatus("Upcoming");
         }
+        examRepository.saveExam(exam);
+        return "redirect:/exam/list";
     }
 
-    @GetMapping
-    public ResponseEntity<List<Exam>> getAllExams() {
-        List<Exam> exams = examService.getAllExams();
-        return ResponseEntity.ok(exams);
+    // SHOW EDIT FORM
+    @GetMapping("/edit/{examId}")
+    public String showEditForm(@PathVariable String examId, Model model) {
+        ScheduledExam exam = examRepository.getExamById(examId);
+        model.addAttribute("exam", exam);
+        return "edit-exam";
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Exam> getExamById(@PathVariable("id") String id) {
-        Exam e = examService.getExamById(id);
-        if (e != null) {
-            return ResponseEntity.ok(e);
+    // UPDATE EXAM
+    @PostMapping("/edit/{examId}")
+    public String updateExam(@PathVariable String examId,
+                             @ModelAttribute ScheduledExam exam) {
+        exam.setExamId(examId);
+        examRepository.updateExam(exam);
+        return "redirect:/exam/list";
+    }
+
+    // DELETE EXAM
+    @GetMapping("/delete/{examId}")
+    public String deleteExam(@PathVariable String examId) {
+        examRepository.deleteExam(examId);
+        return "redirect:/exam/list";
+    }
+
+    // LIST ALL ATTEMPTS
+    @GetMapping("/attempts")
+    public String listAttempts(Model model) {
+        model.addAttribute("attempts", examRepository.getAllAttempts());
+        model.addAttribute("exams", examRepository.getAllExams());
+        return "attempts-list";
+    }
+
+    // SHOW ADD ATTEMPT FORM
+    @GetMapping("/attempts/add")
+    public String showAttemptForm(Model model) {
+        model.addAttribute("attempt", new Attempt());
+        model.addAttribute("exams", examRepository.getAllExams());
+        return "add-attempt";
+    }
+
+    // SAVE ATTEMPT
+    @PostMapping("/attempts/add")
+    public String saveAttempt(@ModelAttribute Attempt attempt) {
+        attempt.setAttemptId("AT" + System.currentTimeMillis() % 100000);
+        if (attempt.getStatus() == null || attempt.getStatus().trim().isEmpty()) {
+            attempt.setStatus("Completed");
         }
-        return ResponseEntity.notFound().build();
+        examRepository.saveAttempt(attempt);
+        return "redirect:/exam/attempts";
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateExam(@PathVariable("id") String id, @RequestBody java.util.Map<String, Object> payload) {
-        try {
-            String title = (String) payload.get("title");
-            String courseCode = (String) payload.get("courseCode");
-            int duration = Integer.parseInt(payload.get("duration").toString());
-            int marks = Integer.parseInt(payload.get("marks").toString());
-            String date = (String) payload.get("date");
-            String status = (String) payload.get("status");
-            String instructions = (String) payload.getOrDefault("instructions", "None");
-
-            Exam updatedExam = new Exam(id, title, courseCode, duration, marks, date, status, instructions);
-            boolean success = examService.updateExam(id, updatedExam);
-            
-            if (success) {
-                return ResponseEntity.ok("Exam " + id + " updated successfully.");
-            }
-            return ResponseEntity.status(404).body("Exam ID not found.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Invalid exam format");
-        }
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteExam(@PathVariable("id") String id) {
-        boolean success = examService.deleteExam(id);
-        if (success) {
-            return ResponseEntity.ok("Exam " + id + " deleted successfully.");
-        }
-        return ResponseEntity.status(404).body("Exam ID not found.");
+    // DELETE ATTEMPT
+    @GetMapping("/attempts/delete/{attemptId}")
+    public String deleteAttempt(@PathVariable String attemptId) {
+        examRepository.deleteAttempt(attemptId);
+        return "redirect:/exam/attempts";
     }
 }

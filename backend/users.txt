@@ -1,0 +1,6 @@
+U006,Gojo,gojo@gmail.com,000000,ADMIN
+U007,Sukuna,sukuna@gmail.com,000000,ADMIN
+U008,Kakashi,kakashi@gmail.com,123456,LECTURER
+U009,Danush,danush@gmail.com,123456,STUDENT
+U010,Piyumal,Piyumal@gmail.com,1234,STUDENT
+U011,Amod,amod@gmail.com,123456,STUDENT
