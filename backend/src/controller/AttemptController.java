@@ -1,7 +1,9 @@
 package controller;
 
 import model.ExamAttempt;
+import model.Result;
 import service.AttemptService;
+import service.ResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +19,12 @@ import java.util.Map;
 public class AttemptController {
 
     private final AttemptService attemptService;
+    private final ResultService resultService;
 
     @Autowired
-    public AttemptController(AttemptService attemptService) {
+    public AttemptController(AttemptService attemptService, ResultService resultService) {
         this.attemptService = attemptService;
+        this.resultService = resultService;
     }
 
     @PostMapping("/student/exam-sessions/{sessionId}/start")
@@ -95,6 +99,19 @@ public class AttemptController {
             String sessionId = (String) payload.get("sessionId");
             String examId = (String) payload.get("examId");
             String studentId = (String) payload.get("studentId");
+            String studentName = (String) payload.getOrDefault("studentName", "");
+            String examTitle = (String) payload.getOrDefault("examTitle", "Unknown Exam");
+            String courseCode = (String) payload.getOrDefault("courseCode", "Unknown");
+            
+            // Handle numeric values that might be Double from JSON
+            Number totalQuestionsNum = (Number) payload.getOrDefault("totalQuestions", 0);
+            Number correctAnswersNum = (Number) payload.getOrDefault("correctAnswers", 0);
+            Number totalMarksNum = (Number) payload.getOrDefault("totalMarks", 100);
+            
+            int totalQuestions = totalQuestionsNum != null ? totalQuestionsNum.intValue() : 0;
+            int correctAnswers = correctAnswersNum != null ? correctAnswersNum.intValue() : 0;
+            int totalMarks = totalMarksNum != null ? totalMarksNum.intValue() : 100;
+            
             @SuppressWarnings("unchecked")
             Map<String, String> answers = (Map<String, String>) payload.get("answers");
             
@@ -107,8 +124,19 @@ public class AttemptController {
             String answersJson = answers != null ? answers.toString() : "";
             attemptService.submitAttempt(attempt.getAttemptId(), answersJson);
             
-            return ResponseEntity.ok("Attempt submitted successfully");
+            // Process result with correct data
+            Result result = resultService.processExamSubmission(
+                studentId, studentName, examId, examTitle, courseCode, sessionId,
+                totalQuestions, correctAnswers, totalMarks,
+                attempt.getSubmitTime()
+            );
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Attempt submitted successfully",
+                "result", result
+            ));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("Failed to submit: " + e.getMessage());
         }
     }

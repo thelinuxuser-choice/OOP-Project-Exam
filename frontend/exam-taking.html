@@ -64,6 +64,9 @@
                 <span class="me-3"><i class="fas fa-user-graduate me-1"></i> <span id="studentName">Student</span></span>
                 <button class="btn btn-outline-light btn-sm" onclick="exitExam()"><i class="fas fa-sign-out-alt"></i> Exit</button>
             </div>
+            <script>
+                document.getElementById('studentName').textContent = localStorage.getItem('userId') || 'Student';
+            </script>
         </div>
     </nav>
 
@@ -203,8 +206,8 @@
         // Load exam data
         async function loadExam() {
             try {
-                // Try to get from API first
-                const res = await fetch(`/student/exam-sessions`);
+                // Try to get specific session from API
+                const res = await fetch(`/student/exam-sessions?studentId=${localStorage.getItem('userId') || ''}`);
                 const sessions = await res.json();
                 examData = sessions.find(s => s.sessionId === sessionId);
             } catch (e) {
@@ -462,10 +465,14 @@
                 sessionId: sessionId,
                 examId: examId,
                 studentId: studentId,
+                studentName: localStorage.getItem('userName') || '',
+                examTitle: examData.examTitle || document.querySelector('.exam-header h4')?.textContent || 'Unknown Exam',
+                courseCode: examData.courseCode || 'Unknown',
                 answers: answers,
                 score: score,
                 totalQuestions: totalQuestions,
                 correctAnswers: correctCount,
+                totalMarks: 100,
                 submittedAt: new Date().toISOString(),
                 durationMinutes: Math.floor((examData.durationMinutes * 60 - timeRemaining) / 60)
             };

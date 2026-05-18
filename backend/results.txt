@@ -1,0 +1,6 @@
+RES001|U009|John Doe|EX001|CS204 Object Oriented Programming Final|CS204|S001|3|2|100|67|66.67|C+|PASS|2026-05-18T11:45:00|Good understanding of concepts
+RES002|ST001|Jane Smith|EX001|CS204 Object Oriented Programming Final|CS204|S001|3|3|100|100|100.0|A+|PASS|2026-05-20T11:30:00|Excellent work!
+RES003|U009|John Doe|EX002|CS301 Algorithms Lab|CS301|S002|2|1|100|50|50.0|C|PASS|2026-05-18T11:45:00|Review hash tables
+RES004|ST002|Bob Wilson|EX002|CS301 Algorithms Lab|CS301|S002|2|2|100|100|100.0|A+|PASS|2026-05-19T12:15:00|Perfect score
+RES005|ST003|Alice Brown|EX001|CS204 Object Oriented Programming Final|CS204|S001|3|1|100|33|33.33|F|FAIL|2026-05-20T10:20:00|Needs improvement
+RES006|U011||EX001|Unknown Exam|Unknown|S004|3|0|100|0|0.0|F|FAIL|2026-05-18T09:55:00|

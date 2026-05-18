@@ -4,21 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Results - UniExam Portal</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .grade-a { color: #28a745; font-weight: bold; }
+        .grade-b { color: #17a2b8; font-weight: bold; }
+        .grade-c { color: #ffc107; font-weight: bold; }
+        .grade-d { color: #fd7e14; font-weight: bold; }
+        .grade-f { color: #dc3545; font-weight: bold; }
+        .pass-status { color: #28a745; }
+        .fail-status { color: #dc3545; }
+        .stats-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .result-card { transition: transform 0.2s; }
+        .result-card:hover { transform: translateY(-5px); }
+    </style>
 </head>
 <body>
-
-    <!-- Sidebar Layout -->
     <nav id="sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-university"></i> UniExam Portal
-        </div>
-
+        <div class="sidebar-header"><i class="fas fa-university"></i> UniExam Portal</div>
         <ul class="list-unstyled components">
             <p class="text-center mb-0 border-bottom pb-3"><small>Main Navigation</small></p>
             <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
@@ -30,151 +34,152 @@
             <li><a href="feedback.html"><i class="fas fa-comments"></i> Feedback</a></li>
             <li><a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a></li>
         </ul>
-
         <ul class="list-unstyled mt-auto mb-4 w-100 position-absolute bottom-0">
             <li><a href="login.html" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </nav>
 
-    <!-- Main Content -->
     <div id="content">
-        <!-- Top Navbar -->
         <nav class="top-navbar">
-            <button type="button" id="sidebarCollapse" class="navbar-btn">
-                <i class="fas fa-bars"></i>
-            </button>
+            <button type="button" id="sidebarCollapse" class="navbar-btn"><i class="fas fa-bars"></i></button>
             <div class="user-profile-nav">
-                <span class="d-none d-md-block text-muted">Welcome, <strong>Lecturer User</strong></span>
-                <div class="avatar">L</div>
+                <span class="d-none d-md-block text-muted">Welcome, <strong id="navUserName">User</strong></span>
+                <div class="avatar" id="navAvatar">U</div>
             </div>
         </nav>
 
-        <!-- Page Content -->
         <div class="page-content">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="h3 mb-0 text-gray-800">Result Management</h2>
-                <button class="btn btn-outline-primary shadow-sm"><i class="fas fa-file-export me-1"></i> Export Results</button>
+                <h2 class="h3 mb-0 text-gray-800" id="pageTitle">Results</h2>
+                <button class="btn btn-outline-primary shadow-sm" id="exportBtn" onclick="exportResults()">
+                    <i class="fas fa-file-export me-1"></i> Export
+                </button>
             </div>
 
-            <!-- Filter Card -->
-            <div class="card mb-4 shadow-sm">
+            <!-- Stats Row -->
+            <div class="row mb-4" id="statsRow"></div>
+
+            <!-- Filters (Lecturer/Admin only) -->
+            <div class="card mb-4 shadow-sm" id="filterCard">
                 <div class="card-body py-2">
-                    <div class="row align-items-center">
-                        <div class="col-md-auto">
-                            <strong>Filter by Exam:</strong>
-                        </div>
-                        <div class="col-md-4">
-                            <select class="form-select form-select-sm">
-                                <option>Data Structures Midterm</option>
-                                <option>Database Systems Final</option>
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-3">
+                            <label class="form-label mb-1">Filter by Exam:</label>
+                            <select class="form-select form-select-sm" id="examFilter" onchange="applyFilters()">
+                                <option value="">All Exams</option>
                             </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label mb-1">Filter by Course:</label>
+                            <select class="form-select form-select-sm" id="courseFilter" onchange="applyFilters()">
+                                <option value="">All Courses</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label mb-1">Filter by Status:</label>
+                            <select class="form-select form-select-sm" id="statusFilter" onchange="applyFilters()">
+                                <option value="">All Status</option>
+                                <option value="PASS">Pass</option>
+                                <option value="FAIL">Fail</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="resetFilters()">
+                                <i class="fas fa-undo me-1"></i> Reset
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Results Table Card -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Student Results Overview</h6>
+            <!-- Lecturer/Admin View: Results Table -->
+            <div class="card shadow-sm mb-4" id="lecturerView">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Student Results</h6>
+                    <span class="badge bg-secondary" id="totalResultsBadge">0 results</span>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0 text-center align-middle">
                             <thead>
                                 <tr>
-                                    <th class="text-start">Student Name</th>
+                                    <th class="text-start">Student</th>
                                     <th>Exam</th>
+                                    <th>Course</th>
                                     <th>Score</th>
-                                    <th>Percentage</th>
+                                    <th>%</th>
                                     <th>Grade</th>
+                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="resultsTableBody">
-                                <!-- Data populated by JS -->
-                            </tbody>
+                            <tbody id="resultsTableBody"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
-            
-            <!-- Student View Example (Mockup to show how it might look for a student) -->
-            <div class="card shadow-sm border-start border-primary border-4 mt-5">
-                <div class="card-header bg-white">
-                    <h6 class="m-0 font-weight-bold text-secondary"><i class="fas fa-user-graduate me-2"></i>Student Result View (Demo)</h6>
+
+            <!-- Student View: My Results Cards -->
+            <div id="studentView" style="display: none;">
+                <div id="studentResultsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grade Adjustment Modal -->
+    <div class="modal fade" id="adjustGradeModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">Adjust Grade</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-md-3 border-end">
-                            <p class="text-muted mb-1">Course</p>
-                            <h5>CS304 Database Systems</h5>
-                        </div>
-                        <div class="col-md-3 border-end">
-                            <p class="text-muted mb-1">Score</p>
-                            <h5 class="text-primary">92 / 100</h5>
-                        </div>
-                        <div class="col-md-3 border-end">
-                            <p class="text-muted mb-1">Percentage</p>
-                            <h5>92%</h5>
-                        </div>
-                        <div class="col-md-3">
-                            <p class="text-muted mb-1">Grade</p>
-                            <h4 class="text-success fw-bold">A+</h4>
-                        </div>
+                <div class="modal-body">
+                    <input type="hidden" id="adjustResultId">
+                    <div class="mb-3">
+                        <label class="form-label">Student</label>
+                        <input type="text" class="form-control" id="adjustStudent" disabled>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Exam</label>
+                        <input type="text" class="form-control" id="adjustExam" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Current Grade</label>
+                        <input type="text" class="form-control" id="adjustCurrentGrade" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Grade</label>
+                        <select class="form-select" id="adjustNewGrade">
+                            <option value="A+">A+</option>
+                            <option value="A">A</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B">B</option>
+                            <option value="B-">B-</option>
+                            <option value="C+">C+</option>
+                            <option value="C">C</option>
+                            <option value="C-">C-</option>
+                            <option value="D+">D+</option>
+                            <option value="D">D</option>
+                            <option value="F">F</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Feedback/Comment</label>
+                        <textarea class="form-control" id="adjustFeedback" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveGradeAdjustment()">Save Changes</button>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- Manual Grade Adjustment Modal -->
-    <div class="modal fade" id="adjustGradeModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header bg-light">
-            <h5 class="modal-title">Adjust Student Grade</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="gradeForm">
-                <div class="mb-3">
-                    <label class="form-label">Student Name</label>
-                    <input type="text" class="form-control" id="adjStudentName" disabled>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Exam</label>
-                    <input type="text" class="form-control" id="adjExamName" disabled>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Score</label>
-                        <input type="number" class="form-control" id="adjScore" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Out of</label>
-                        <input type="number" class="form-control" value="100" disabled>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Reason for adjustment</label>
-                    <textarea class="form-control" rows="2" placeholder="e.g. Question 4 was evaluated manually" required></textarea>
-                </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" onclick="alert('Grade adjusted successfully!'); bootstrap.Modal.getInstance(document.getElementById('adjustGradeModal')).hide();">Save Changes</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Save URL params to localStorage if present
         const params = new URLSearchParams(window.location.search);
         const userId = params.get("userId");
         const role = params.get("role");
@@ -183,46 +188,307 @@
             localStorage.setItem("role", role.toUpperCase());
         }
     </script>
-    <!-- Custom Scripts -->
-    <script src="js/mock-data.js"></script>
     <script src="js/main.js"></script>
     <script src="js/access-control.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const tbody = document.getElementById('resultsTableBody');
-            if (typeof mockData !== 'undefined') {
-                mockData.results.forEach(res => {
-                    
-                    let gradeClass = 'text-dark';
-                    if(res.grade.includes('A')) gradeClass = 'text-success fw-bold';
-                    else if(res.grade.includes('C')) gradeClass = 'text-warning fw-bold';
-                    else if(res.grade.includes('F')) gradeClass = 'text-danger fw-bold';
+        let allResults = [];
+        let currentUserRole = localStorage.getItem('role') || 'STUDENT';
+        let currentUserId = localStorage.getItem('userId') || '';
 
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="text-start fw-bold">${res.student}</td>
-                        <td>${res.exam}</td>
-                        <td>${res.score} / ${res.total}</td>
-                        <td>
-                            <div class="progress" style="height: 20px;">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: ${res.percentage}%;" aria-valuenow="${res.percentage}" aria-valuemin="0" aria-valuemax="100">${res.percentage}%</div>
-                            </div>
-                        </td>
-                        <td class="${gradeClass}">${res.grade}</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary" onclick="openAdjustModal('${res.student}', '${res.exam}', ${res.score})" title="Adjust Score"><i class="fas fa-edit"></i> Edit</button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('navUserName').textContent = currentUserId || 'User';
+            document.getElementById('navAvatar').textContent = (currentUserId || 'U').charAt(0).toUpperCase();
+
+            if (currentUserRole === 'STUDENT') {
+                document.getElementById('pageTitle').textContent = 'My Results';
+                document.getElementById('filterCard').style.display = 'none';
+                document.getElementById('lecturerView').style.display = 'none';
+                document.getElementById('studentView').style.display = 'block';
+                document.getElementById('exportBtn').style.display = 'none';
+                loadStudentResults();
+            } else {
+                document.getElementById('studentView').style.display = 'none';
+                loadAllResults();
             }
         });
 
-        function openAdjustModal(student, exam, score) {
-            document.getElementById('adjStudentName').value = student;
-            document.getElementById('adjExamName').value = exam;
-            document.getElementById('adjScore').value = score;
+        async function loadAllResults() {
+            try {
+                const res = await fetch('/results');
+                if (res.ok) {
+                    allResults = await res.json();
+                } else {
+                    allResults = getMockResults();
+                }
+            } catch (e) {
+                allResults = getMockResults();
+            }
+            populateFilters();
+            renderResultsTable(allResults);
+            updateStats(allResults);
+        }
+
+        async function loadStudentResults() {
+            let results = [];
+            const studentId = currentUserId || localStorage.getItem('userId') || '';
+            console.log('Loading results for student:', studentId);
+            
+            try {
+                const res = await fetch(`/results/student/${studentId}`);
+                if (res.ok) {
+                    results = await res.json();
+                    console.log('API results:', results);
+                }
+            } catch (e) {
+                console.log('API failed, using mock data:', e);
+            }
+            
+            // Filter to ensure only this student's results
+            results = results.filter(r => r.studentId === studentId);
+            console.log('Filtered results:', results);
+            
+            if (results.length === 0) {
+                results = getMockResults().filter(r => r.studentId === studentId);
+                console.log('Using mock data:', results);
+            }
+            
+            renderStudentResults(results);
+            updateStats(results);
+        }
+
+        function getMockResults() {
+            return [
+                { resultId: 'RES001', studentId: 'U009', studentName: 'John Doe', examId: 'EX001', examTitle: 'CS204 OOP Final', courseCode: 'CS204', totalQuestions: 3, correctAnswers: 2, totalMarks: 100, obtainedMarks: 67, percentage: 66.67, grade: 'C+', status: 'PASS', submittedAt: '2026-05-18T11:45:00', feedback: 'Good understanding' },
+                { resultId: 'RES002', studentId: 'ST001', studentName: 'Jane Smith', examId: 'EX001', examTitle: 'CS204 OOP Final', courseCode: 'CS204', totalQuestions: 3, correctAnswers: 3, totalMarks: 100, obtainedMarks: 100, percentage: 100.0, grade: 'A+', status: 'PASS', submittedAt: '2026-05-20T11:30:00', feedback: 'Excellent!' },
+                { resultId: 'RES003', studentId: 'U009', studentName: 'John Doe', examId: 'EX002', examTitle: 'CS301 Algorithms', courseCode: 'CS301', totalQuestions: 2, correctAnswers: 1, totalMarks: 100, obtainedMarks: 50, percentage: 50.0, grade: 'C', status: 'PASS', submittedAt: '2026-05-18T11:45:00', feedback: 'Review hash tables' },
+                { resultId: 'RES005', studentId: 'ST003', studentName: 'Alice Brown', examId: 'EX001', examTitle: 'CS204 OOP Final', courseCode: 'CS204', totalQuestions: 3, correctAnswers: 1, totalMarks: 100, obtainedMarks: 33, percentage: 33.33, grade: 'F', status: 'FAIL', submittedAt: '2026-05-20T10:20:00', feedback: 'Needs improvement' },
+                { resultId: 'RES006', studentId: 'U011', studentName: 'User U011', examId: 'EX001', examTitle: 'CS204 OOP Practice', courseCode: 'CS204', totalQuestions: 3, correctAnswers: 0, totalMarks: 100, obtainedMarks: 0, percentage: 0.0, grade: 'F', status: 'FAIL', submittedAt: '2026-05-18T09:55:00', feedback: '' }
+            ];
+        }
+
+        function populateFilters() {
+            const exams = [...new Set(allResults.map(r => r.examTitle))];
+            const courses = [...new Set(allResults.map(r => r.courseCode))];
+
+            const examFilter = document.getElementById('examFilter');
+            exams.forEach(e => examFilter.innerHTML += `<option value="${e}">${e}</option>`);
+
+            const courseFilter = document.getElementById('courseFilter');
+            courses.forEach(c => courseFilter.innerHTML += `<option value="${c}">${c}</option>`);
+        }
+
+        function renderResultsTable(results) {
+            const tbody = document.getElementById('resultsTableBody');
+            tbody.innerHTML = '';
+
+            if (results.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-muted py-4">No results found</td></tr>';
+                document.getElementById('totalResultsBadge').textContent = '0 results';
+                return;
+            }
+
+            document.getElementById('totalResultsBadge').textContent = `${results.length} results`;
+
+            results.forEach(r => {
+                const gradeClass = getGradeClass(r.grade);
+                const statusClass = r.status === 'PASS' ? 'pass-status' : 'fail-status';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-start fw-bold">${r.studentName || r.studentId}</td>
+                    <td>${r.examTitle}</td>
+                    <td><span class="badge bg-light text-dark">${r.courseCode}</span></td>
+                    <td>${r.obtainedMarks}/${r.totalMarks}</td>
+                    <td>${r.percentage.toFixed(1)}%</td>
+                    <td class="${gradeClass}">${r.grade}</td>
+                    <td class="${statusClass}"><i class="fas fa-${r.status === 'PASS' ? 'check' : 'times'}"></i> ${r.status}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="openAdjustModal('${r.resultId}', '${r.studentName || r.studentId}', '${r.examTitle}', '${r.grade}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderStudentResults(results) {
+            const container = document.getElementById('studentResultsList');
+            container.innerHTML = '';
+
+            if (results.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-5"><i class="fas fa-clipboard fa-3x mb-3"></i><p>No results available yet</p></div>';
+                return;
+            }
+
+            let html = '<div class="row">';
+            results.forEach(r => {
+                const gradeClass = getGradeClass(r.grade);
+                const statusBadge = r.status === 'PASS'
+                    ? '<span class="badge bg-success">PASS</span>'
+                    : '<span class="badge bg-danger">FAIL</span>';
+
+                html += `
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card result-card h-100 shadow-sm">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">${r.examTitle}</span>
+                                ${statusBadge}
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <h1 class="display-4 ${gradeClass}">${r.grade}</h1>
+                                    <p class="text-muted mb-0">Grade</p>
+                                </div>
+                                <div class="row text-center mb-3">
+                                    <div class="col-6 border-end">
+                                        <h5>${r.percentage.toFixed(1)}%</h5>
+                                        <small class="text-muted">Percentage</small>
+                                    </div>
+                                    <div class="col-6">
+                                        <h5>${r.obtainedMarks}/${r.totalMarks}</h5>
+                                        <small class="text-muted">Marks</small>
+                                    </div>
+                                </div>
+                                <p class="text-muted small mb-1"><i class="fas fa-book me-1"></i> ${r.courseCode}</p>
+                                <p class="text-muted small mb-1"><i class="fas fa-calendar me-1"></i> ${r.submittedAt ? new Date(r.submittedAt).toLocaleDateString() : 'N/A'}</p>
+                                <p class="text-muted small mb-0"><i class="fas fa-check-circle me-1"></i> ${r.correctAnswers}/${r.totalQuestions} correct</p>
+                                ${r.feedback ? `<div class="mt-3 p-2 bg-light rounded"><small class="text-muted"><i class="fas fa-comment me-1"></i> ${r.feedback}</small></div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function updateStats(results) {
+            const statsRow = document.getElementById('statsRow');
+            if (results.length === 0) {
+                statsRow.innerHTML = '';
+                return;
+            }
+
+            const avgPercentage = results.reduce((sum, r) => sum + r.percentage, 0) / results.length;
+            const passCount = results.filter(r => r.status === 'PASS').length;
+            const failCount = results.filter(r => r.status === 'FAIL').length;
+            const highestGrade = results.reduce((max, r) => r.percentage > max.percentage ? r : max, results[0]);
+
+            statsRow.innerHTML = `
+                <div class="col-md-3 mb-3">
+                    <div class="card stats-card h-100">
+                        <div class="card-body text-center">
+                            <h3>${results.length}</h3>
+                            <p class="mb-0">Total Results</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-success text-white h-100">
+                        <div class="card-body text-center">
+                            <h3>${passCount}</h3>
+                            <p class="mb-0">Passed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-danger text-white h-100">
+                        <div class="card-body text-center">
+                            <h3>${failCount}</h3>
+                            <p class="mb-0">Failed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-info text-white h-100">
+                        <div class="card-body text-center">
+                            <h3>${avgPercentage.toFixed(1)}%</h3>
+                            <p class="mb-0">Average</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getGradeClass(grade) {
+            if (grade.startsWith('A')) return 'grade-a';
+            if (grade.startsWith('B')) return 'grade-b';
+            if (grade.startsWith('C')) return 'grade-c';
+            if (grade.startsWith('D')) return 'grade-d';
+            return 'grade-f';
+        }
+
+        function applyFilters() {
+            const exam = document.getElementById('examFilter').value;
+            const course = document.getElementById('courseFilter').value;
+            const status = document.getElementById('statusFilter').value;
+
+            let filtered = allResults;
+            if (exam) filtered = filtered.filter(r => r.examTitle === exam);
+            if (course) filtered = filtered.filter(r => r.courseCode === course);
+            if (status) filtered = filtered.filter(r => r.status === status);
+
+            renderResultsTable(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('examFilter').value = '';
+            document.getElementById('courseFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            renderResultsTable(allResults);
+        }
+
+        function openAdjustModal(resultId, student, exam, currentGrade) {
+            document.getElementById('adjustResultId').value = resultId;
+            document.getElementById('adjustStudent').value = student;
+            document.getElementById('adjustExam').value = exam;
+            document.getElementById('adjustCurrentGrade').value = currentGrade;
+            document.getElementById('adjustNewGrade').value = currentGrade;
+            document.getElementById('adjustFeedback').value = '';
             new bootstrap.Modal(document.getElementById('adjustGradeModal')).show();
+        }
+
+        async function saveGradeAdjustment() {
+            const resultId = document.getElementById('adjustResultId').value;
+            const newGrade = document.getElementById('adjustNewGrade').value;
+            const feedback = document.getElementById('adjustFeedback').value;
+
+            try {
+                const res = await fetch(`/results/${resultId}/grade`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ grade: newGrade, feedback: feedback })
+                });
+
+                if (res.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('adjustGradeModal')).hide();
+                    loadAllResults();
+                    alert('Grade updated successfully');
+                } else {
+                    alert('Failed to update grade');
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+
+        function exportResults() {
+            const csv = [
+                ['Student ID', 'Student Name', 'Exam', 'Course', 'Score', 'Percentage', 'Grade', 'Status', 'Submitted'].join(','),
+                ...allResults.map(r => [
+                    r.studentId, r.studentName || '', r.examTitle, r.courseCode,
+                    `${r.obtainedMarks}/${r.totalMarks}`, r.percentage.toFixed(2),
+                    r.grade, r.status, r.submittedAt
+                ].join(','))
+            ].join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `results_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
         }
     </script>
 </body>

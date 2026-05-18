@@ -1,5 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+    // Update navbar username display
+    const userId = localStorage.getItem('userId');
+    const navUserName = document.getElementById('navUserName');
+    const navAvatar = document.getElementById('navAvatar');
+    
+    if (navUserName && userId) {
+        navUserName.textContent = userId;
+    }
+    if (navAvatar && userId) {
+        navAvatar.textContent = userId.charAt(0).toUpperCase();
+    }
+
     // Sidebar toggle functionality
     const sidebarCollapse = document.getElementById('sidebarCollapse');
     const sidebar = document.getElementById('sidebar');
