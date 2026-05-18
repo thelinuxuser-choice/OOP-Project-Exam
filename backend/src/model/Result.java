@@ -2,6 +2,7 @@ package model;
 
 import java.time.LocalDateTime;
 
+// Exam result model for grade management
 public class Result {
     private String resultId;
     private String studentId;
