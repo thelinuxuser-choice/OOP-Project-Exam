@@ -7,8 +7,15 @@ import java.util.*;
 
 public class UserDAO {
 
-    private static final String FILE_PATH =
-            "C://Users/sadah/OneDrive/Desktop/OOP test/oerms-springboot/oerms-springboot/src/main/resources/users.txt";
+    // Dynamically find users.txt whether running from /backend or project root
+    private static String getFilePath() {
+        java.io.File f = new java.io.File("users.txt");
+        if (f.exists()) return f.getAbsolutePath();
+        java.io.File f2 = new java.io.File("backend/users.txt");
+        if (f2.exists()) return f2.getAbsolutePath();
+        // Default fallback: create in working directory
+        return new java.io.File(System.getProperty("user.dir"), "users.txt").getAbsolutePath();
+    }
 
     // =========================
     // REGISTER USER
@@ -16,7 +23,7 @@ public class UserDAO {
     public boolean registerUser(User user) {
 
         try (BufferedWriter writer =
-                     new BufferedWriter(new FileWriter(FILE_PATH, true))) {
+                     new BufferedWriter(new FileWriter(getFilePath(), true))) {
 
             writer.write(
                     user.getId().trim() + "," +
@@ -80,7 +87,7 @@ public class UserDAO {
 
         List<User> users = new ArrayList<>();
 
-        File file = new File(FILE_PATH);
+        File file = new File(getFilePath());
 
         if (!file.exists()) {
             return users;
@@ -150,7 +157,7 @@ public class UserDAO {
 
         if (!removed) return false;
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, false))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(getFilePath(), false))) {
 
             for (User u : updatedUsers) {
                 writer.write(

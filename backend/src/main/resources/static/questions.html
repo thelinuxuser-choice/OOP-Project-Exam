@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Bank - UniExam Portal</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Sidebar Layout -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-university"></i> UniExam Portal
+        </div>
+
+        <ul class="list-unstyled components">
+            <p class="text-center mb-0 border-bottom pb-3"><small>Main Navigation</small></p>
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="users.html"><i class="fas fa-users"></i> Users</a></li>
+            <li><a href="exams.html"><i class="fas fa-file-alt"></i> Exams</a></li>
+            <li class="active"><a href="questions.html"><i class="fas fa-question-circle"></i> Questions</a></li>
+            <li><a href="exam-session.html"><i class="fas fa-laptop-code"></i> Exam Sessions</a></li>
+            <li><a href="results.html"><i class="fas fa-chart-bar"></i> Results</a></li>
+            <li><a href="feedback.html"><i class="fas fa-comments"></i> Feedback</a></li>
+            <li><a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a></li>
+        </ul>
+
+        <ul class="list-unstyled mt-auto mb-4 w-100 position-absolute bottom-0">
+            <li><a href="login.html" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="content">
+        <!-- Top Navbar -->
+        <nav class="top-navbar">
+            <button type="button" id="sidebarCollapse" class="navbar-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="user-profile-nav">
+                <span class="d-none d-md-block text-muted">Welcome, <strong>Lecturer User</strong></span>
+                <div class="avatar">L</div>
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h3 mb-0 text-gray-800">Question Bank</h2>
+                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#questionModal">
+                    <i class="fas fa-plus fa-sm text-white-50"></i> Add Question
+                </button>
+            </div>
+
+            <!-- Filter Card -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body py-2">
+                    <div class="row align-items-center">
+                        <div class="col-md-auto">
+                            <strong>Filter by:</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="courseFilter" class="form-select form-select-sm" onchange="applyFilters()">
+                                <option value="ALL">All Exams</option>
+                                <option value="EX001">EX001</option>
+                                <option value="EX002">EX002</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="typeFilter" class="form-select form-select-sm" onchange="applyFilters()">
+                                <option value="ALL">All Types</option>
+                                <option value="MCQ">MCQ</option>
+                                <option value="SHORT">Short Answer</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Questions Table Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Question Text</th>
+                                    <th>Type</th>
+                                    <th>Marks</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="questionsTableBody">
+                                <!-- Data populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Question Modal -->
+    <div class="modal fade" id="questionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">Add / Edit Question</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="questionForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Question Type</label>
+                                <select class="form-select" id="qTypeSelect" onchange="toggleOptions()">
+                                    <option value="MCQ">Multiple Choice (MCQ)</option>
+                                    <option value="Short Answer">Short Answer</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Marks</label>
+                                <input type="number" class="form-control" value="1" min="1" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Exam ID</label>
+                            <input type="text" class="form-control" id="examIdInput" placeholder="e.g., EX001" value="EX001" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Question Text</label>
+                            <textarea class="form-control" rows="3" required></textarea>
+                        </div>
+
+                        <!-- MCQ Options Section -->
+                        <div id="mcqOptionsSection">
+                            <label class="form-label fw-bold">Options</label>
+                            <div class="input-group mb-2">
+                                <div class="input-group-text"><input type="radio" name="correctAnswer" value="A"
+                                        required></div>
+                                <span class="input-group-text">A</span>
+                                <input type="text" class="form-control" placeholder="Option A text">
+                            </div>
+                            <div class="input-group mb-2">
+                                <div class="input-group-text"><input type="radio" name="correctAnswer" value="B"></div>
+                                <span class="input-group-text">B</span>
+                                <input type="text" class="form-control" placeholder="Option B text">
+                            </div>
+                            <div class="input-group mb-2">
+                                <div class="input-group-text"><input type="radio" name="correctAnswer" value="C"></div>
+                                <span class="input-group-text">C</span>
+                                <input type="text" class="form-control" placeholder="Option C text">
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-text"><input type="radio" name="correctAnswer" value="D"></div>
+                                <span class="input-group-text">D</span>
+                                <input type="text" class="form-control" placeholder="Option D text">
+                            </div>
+                            <small class="text-muted">Select the radio button next to the correct answer.</small>
+                        </div>
+
+                        <!-- Short Answer Section -->
+                        <div id="shortAnswerSection" class="d-none">
+                            <label class="form-label fw-bold">Keywords / Reference Answer</label>
+                            <textarea class="form-control" rows="2"
+                                placeholder="Provide keywords or reference answer for grading"></textarea>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNewQuestion()">Save Question</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Question Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">Question Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 id="previewText" class="mb-4">Question text will appear here?</h6>
+                    <div id="previewOptions" class="d-flex flex-column gap-2">
+                        <!-- Options injected here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Scripts -->
+    <script src="js/mock-data.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let fetchedQuestions = [];
+
+        function toggleOptions() {
+            const type = document.getElementById('qTypeSelect').value;
+            const mcq = document.getElementById('mcqOptionsSection');
+            const short = document.getElementById('shortAnswerSection');
+
+            if (type === 'MCQ') {
+                mcq.classList.remove('d-none');
+                short.classList.add('d-none');
+            } else {
+                mcq.classList.add('d-none');
+                short.classList.remove('d-none');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchQuestions();
+        });
+
+        function fetchQuestions() {
+            fetch('http://localhost:8080/questions')
+                .then(response => response.json())
+                .then(data => {
+                    fetchedQuestions = data;
+                    populateExamFilterOptions(data);
+                    applyFilters(); // This will render the table based on current filters
+                })
+                .catch(error => {
+                    console.error("Error fetching questions:", error);
+                    document.getElementById('questionsTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-danger">Failed to connect to Java Backend. Make sure Application.java is running!</td></tr>';
+                });
+        }
+
+        function populateExamFilterOptions(questions) {
+            const select = document.getElementById('courseFilter');
+            const currentVal = select.value;
+            
+            // Extract unique Exam IDs using a Set
+            const uniqueExams = [...new Set(questions.map(q => q.examId))].sort();
+            
+            // Rebuild the dropdown HTML
+            select.innerHTML = '<option value="ALL">All Exams</option>';
+            uniqueExams.forEach(exam => {
+                select.innerHTML += `<option value="${exam}">${exam}</option>`;
+            });
+            
+            // Try to keep the previously selected value active
+            if (currentVal !== 'ALL' && uniqueExams.includes(currentVal)) {
+                select.value = currentVal;
+            }
+        }
+
+        function applyFilters() {
+            const examVal = document.getElementById('courseFilter').value;
+            const typeVal = document.getElementById('typeFilter').value;
+            
+            let filteredList = fetchedQuestions;
+            
+            // Filter by Exam ID
+            if (examVal !== 'ALL') {
+                filteredList = filteredList.filter(q => q.examId === examVal);
+            }
+            
+            // Filter by Question Type
+            if (typeVal !== 'ALL') {
+                if (typeVal === 'MCQ') {
+                    filteredList = filteredList.filter(q => q.options != null);
+                } else if (typeVal === 'SHORT') {
+                    filteredList = filteredList.filter(q => q.options == null);
+                }
+            }
+            
+            // Render the newly filtered list
+            renderQuestionsTable(filteredList);
+        }
+
+        function renderQuestionsTable(questions) {
+            const tbody = document.getElementById('questionsTableBody');
+            tbody.innerHTML = '';
+
+            if (!questions || questions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center">No questions in the database yet. Add one!</td></tr>';
+                return;
+            }
+
+            questions.forEach(q => {
+                const type = q.options ? 'MCQ' : 'Short Answer';
+                const badgeClass = type === 'MCQ' ? 'bg-primary' : 'bg-info text-dark';
+                const tr = document.createElement('tr');
+
+                tr.innerHTML = `
+                    <td><strong>${q.questionId}</strong></td>
+                    <td>${q.questionText.substring(0, 50)}${q.questionText.length > 50 ? '...' : ''}</td>
+                    <td><span class="badge ${badgeClass}">${type}</span></td>
+                    <td>${q.marks}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary me-1" title="Preview" onclick="showPreview('${q.questionId}')"><i class="fas fa-eye"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" title="Delete" onclick="deleteQuestion('${q.questionId}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function saveNewQuestion() {
+            const qType = document.getElementById('qTypeSelect').value;
+            const marks = document.querySelector('input[type="number"]').value;
+            const text = document.querySelector('textarea').value;
+            const examId = document.getElementById('examIdInput').value.trim() || "EX001";
+
+            // Generate a random ID for the new question
+            const qId = "Q" + Math.floor(Math.random() * 900 + 100);
+
+            let questionPayload = {
+                questionId: qId,
+                examId: examId,
+                questionText: text,
+                marks: parseInt(marks)
+            };
+
+            if (qType === 'MCQ') {
+                const optInputs = document.querySelectorAll('#mcqOptionsSection input[type="text"]');
+                const correctRadio = document.querySelector('input[name="correctAnswer"]:checked');
+
+                if (!correctRadio) {
+                    alert("Please select the correct answer for the MCQ!");
+                    return;
+                }
+
+                const options = Array.from(optInputs).map(inp => inp.value).filter(val => val.trim() !== "");
+                const correctIdx = correctRadio.value.charCodeAt(0) - 65; // A=0, B=1...
+                const correctAnswerText = options[correctIdx];
+
+                questionPayload.options = options;
+                questionPayload.correctAnswer = correctAnswerText;
+            } else {
+                const answerText = document.querySelector('#shortAnswerSection textarea').value;
+                questionPayload.correctAnswer = answerText;
+            }
+
+            fetch('http://localhost:8080/questions/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(questionPayload)
+            })
+                .then(response => {
+                    alert("Question added successfully!");
+                    bootstrap.Modal.getInstance(document.getElementById('questionModal')).hide();
+                    fetchQuestions(); // Refresh table
+                })
+                .catch(error => console.error("Error saving:", error));
+        }
+
+        function deleteQuestion(id) {
+            if (confirm('Are you sure you want to delete this question?')) {
+                fetch('http://localhost:8080/questions/delete/' + id, { method: 'DELETE' })
+                    .then(() => fetchQuestions());
+            }
+        }
+
+        function showPreview(id) {
+            const q = fetchedQuestions.find(x => x.questionId === id);
+            if (q) {
+                document.getElementById('previewText').innerText = q.questionText;
+                const optsDiv = document.getElementById('previewOptions');
+                optsDiv.innerHTML = '';
+
+                if (q.options) {
+                    q.options.forEach((opt, idx) => {
+                        const isCorrect = q.correctAnswer && q.correctAnswer.toLowerCase() === opt.toLowerCase();
+                        optsDiv.innerHTML += `
+                            <div class="p-2 border rounded ${isCorrect ? 'border-success bg-success bg-opacity-10' : ''}">
+                                <strong>${idx + 1}.</strong> ${opt} 
+                                ${isCorrect ? '<i class="fas fa-check text-success ms-2"></i>' : ''}
+                            </div>
+                        `;
+                    });
+                } else {
+                    optsDiv.innerHTML = `<textarea class="form-control" rows="3" placeholder="Student will type answer here..." disabled></textarea>
+                    <div class="mt-2 text-success"><small><strong>Keywords Required:</strong> ${q.correctAnswer}</small></div>`;
+                }
+
+                new bootstrap.Modal(document.getElementById('previewModal')).show();
+            }
+        }
+    </script>
+</body>
+
+</html>

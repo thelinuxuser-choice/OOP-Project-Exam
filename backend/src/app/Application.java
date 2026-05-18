@@ -5,49 +5,55 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.context.annotation.Bean;
-import java.io.File;
 
-/**
- * Main application class to start the Spring Boot web server.
- */
 @SpringBootApplication
-@ComponentScan(basePackages = {"controller", "service", "model", "util"})
+@ComponentScan(basePackages = {
+    "app",
+    "controller",
+    "service",
+    "model",
+    "util",
+    "com.oerms.springboot.controller",
+    "com.oerms.springboot.dao",
+    "com.oerms.springboot.service",
+    "com.rashmi.onlineexam.controller",
+    "com.rashmi.onlineexam.repository"
+})
 public class Application {
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-        System.out.println("Application started successfully.");
+        System.out.println("Application started! Visit: http://localhost:8080/");
     }
 
-    /**
-     * This configuration tells Spring Boot to host your HTML/CSS/JS files
-     * located in the "frontend" folder at the root of localhost:8080.
-     */
     @Configuration
     public static class WebConfig implements WebMvcConfigurer {
+
         @Override
         public void addResourceHandlers(ResourceHandlerRegistry registry) {
-            String frontendPath = "file:C:/Users/SHENAL CHANDUPA/Desktop/OOP Project/OOP-Project-Exam/frontend/";
+            // Primary: serve from classpath static (always works in Spring Boot)
+            // Fallback: dynamically find the frontend folder for live editing
+            java.io.File currentDir = new java.io.File(System.getProperty("user.dir"));
+            java.io.File frontendDir = new java.io.File(currentDir, "frontend");
+            if (!frontendDir.exists() && currentDir.getParentFile() != null) {
+                frontendDir = new java.io.File(currentDir.getParentFile(), "frontend");
+            }
+            String frontendUri = frontendDir.toURI().toString();
+            
             registry.addResourceHandler("/**")
-                    .addResourceLocations(frontendPath, "file:frontend/", "file:../frontend/");
+                    .addResourceLocations(
+                            "classpath:/static/",
+                            frontendUri
+                    );
         }
 
         @Override
-        public void addViewControllers(org.springframework.web.servlet.config.annotation.ViewControllerRegistry registry) {
+        public void addViewControllers(ViewControllerRegistry registry) {
             registry.addViewController("/").setViewName("forward:/index.html");
-        }
-
-        @Bean
-        public WebServerFactoryCustomizer<TomcatServletWebServerFactory> servletContainer() {
-            return server -> {
-                File webapp = new File("C:\\Users\\SHENAL CHANDUPA\\Desktop\\OOP Project\\OOP-Project-Exam\\backend\\src\\main\\webapp");
-                if (webapp.exists()) {
-                    server.setDocumentRoot(webapp);
-                }
-            };
+            registry.addViewController("/login").setViewName("forward:/login.html");
+            registry.addViewController("/dashboard").setViewName("forward:/dashboard.html");
         }
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class FeedbackService {
 
-    private static final String FILE_PATH = "C:\\Users\\SHENAL CHANDUPA\\Desktop\\OOP Project\\OOP-Project-Exam\\backend\\feedback.txt";
+    private static final String FILE_PATH = "feedback.txt";
 
     public List<Feedback> getAllFeedbacks() {
         List<String> lines = FileHandler.readFile(FILE_PATH);

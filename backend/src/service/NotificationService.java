@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class NotificationService {
 
-    private static final String FILE_PATH = "C:\\Users\\SHENAL CHANDUPA\\Desktop\\OOP Project\\OOP-Project-Exam\\backend\\notifications.txt";
+    private static final String FILE_PATH = "notifications.txt";
 
     public List<Notification> getAllNotifications() {
         List<String> lines = FileHandler.readFile(FILE_PATH);
