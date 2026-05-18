@@ -3,8 +3,6 @@ package controller;
 import model.Question;
 import service.QuestionService;
 
-// Note: These imports simulate a Spring Boot REST environment.
-// If not using Spring Boot, these can be replaced by Java Servlets.
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,16 +11,14 @@ import java.util.List;
 
 /**
  * Controller class to expose Question Bank CRUD operations via HTTP endpoints.
- * Demonstrates MVC structure (Controller component).
  */
-@CrossOrigin(origins = "*") // Allows your frontend website to call this API
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/questions")
 public class QuestionController {
 
     private final QuestionService questionService;
 
-    // Dependency Injection
     @Autowired
     public QuestionController(QuestionService questionService) {
         this.questionService = questionService;
@@ -59,11 +55,16 @@ public class QuestionController {
 
     /**
      * GET /questions
-     * Retrieves all available questions.
+     * Retrieves all available questions or filters by examId if provided.
      */
     @GetMapping
-    public ResponseEntity<List<Question>> getAllQuestions() {
-        List<Question> questions = questionService.getAllQuestions();
+    public ResponseEntity<List<Question>> getAllQuestions(@RequestParam(required = false) String examId) {
+        List<Question> questions;
+        if (examId != null && !examId.isEmpty()) {
+            questions = questionService.getQuestionsByExamId(examId);
+        } else {
+            questions = questionService.getAllQuestions();
+        }
         return ResponseEntity.ok(questions);
     }
 

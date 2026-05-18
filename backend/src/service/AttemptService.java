@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 public class AttemptService {
 
-    private static final String FILE_PATH = "attempts.txt";
+    private static final String FILE_PATH = "backend/attempts.txt";
 
     private final ExamSessionService examSessionService;
 

@@ -1,8 +1,5 @@
 package model;
 
-/**
- * CourseFeedback class demonstrating inheritance from Feedback.
- */
 public class CourseFeedback extends Feedback {
 
     public CourseFeedback() {
@@ -14,9 +11,6 @@ public class CourseFeedback extends Feedback {
         super(feedbackId, studentId, courseId, "COURSE", rating, comment, status, createdDate);
     }
 
-    /**
-     * Overriding display method for polymorphism.
-     */
     @Override
     public String display() {
         return "[COURSE] " + super.display() + " for Course: " + getExamId();

@@ -1,1 +1,4 @@
-FB001|STU001|EX001|EXAM|5|Great exam!|PENDING|2023-10-27 10:00:00
+FB001|S104592|EX002|General|4|Well-structured exam with clear instructions.|REVIEWED|2026-04-21 10:00:00
+FB002|S104594|EX003|Complaint|2|Timer was too short for the number of questions.|PENDING|2026-03-16 14:30:00
+FB003|S104593|EX002|Suggestion|3|Would prefer more MCQ options.|PENDING|2026-04-22 09:15:00
+FB004|S104592|EX003|Appreciation|5|Excellent exam portal experience.|REVIEWED|2026-03-17 16:45:00

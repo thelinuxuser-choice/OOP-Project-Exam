@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Service
 public class CourseService {
-    private static final String FILE_PATH = "courses.txt";
+    private static final String FILE_PATH = "backend/courses.txt";
     private List<Course> courseList;
 
     public CourseService() {

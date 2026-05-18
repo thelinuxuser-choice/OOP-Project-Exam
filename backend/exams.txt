@@ -1,0 +1,4 @@
+EX001|CS204 Object Oriented Programming Final|CS204|180|100|2026-05-18|Upcoming|This is a comprehensive final examination covering all OOP concepts.
+EX002|CS301 Algorithms & Data Structures Lab|CS301|120|50|2026-04-20|Completed|Practical lab examination on algorithms and data structures.
+EX003|CS204 Midterm Assessment|CS204|60|30|2026-03-15|Completed|Midterm covering basic OOP principles and Java syntax.
+EX004|CS450 Software Engineering Project Defense|CS450|45|100|2026-05-10|Draft|Project defense presentation and viva.

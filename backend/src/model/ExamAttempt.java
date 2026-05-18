@@ -2,10 +2,6 @@ package model;
 
 import java.time.LocalDateTime;
 
-/**
- * OOP Concept: Encapsulation
- * Represents a student's attempt at an exam session. Fields are private and accessed via getters/setters.
- */
 public class ExamAttempt {
     private String attemptId;
     private String sessionId;

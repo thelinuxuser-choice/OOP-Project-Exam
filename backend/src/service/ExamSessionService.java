@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 public class ExamSessionService {
 
-    private static final String FILE_PATH = "sessions.txt";
+    private static final String FILE_PATH = "backend/sessions.txt";
 
     /**
      * Reads all sessions from the file and converts them to ExamSession objects.
@@ -45,7 +45,6 @@ public class ExamSessionService {
                 String sessionType = (parts.length >= 9) ? parts[8] : "TIMED";
 
                 ExamSession session;
-                // Polymorphism in instantiation
                 if ("PRACTICE".equalsIgnoreCase(sessionType)) {
                     session = new PracticeSession(sessionId, examId, examTitle, courseCode, startTime, endTime, durationMinutes, status);
                 } else {
@@ -70,6 +69,52 @@ public class ExamSessionService {
             }
         }
         return activeSessions;
+    }
+
+    /**
+     * Gets all sessions for a student with computed status (UPCOMING, ACTIVE, COMPLETED, CLOSED).
+     */
+    public List<ExamSession> getStudentSessions(String studentId) {
+        List<ExamSession> allSessions = getAllSessions();
+        List<String> completedSessionIds = getCompletedSessionIds(studentId);
+        List<ExamSession> result = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        
+        for (ExamSession session : allSessions) {
+            // Check if student already completed this exam
+            if (completedSessionIds.contains(session.getSessionId())) {
+                session.setStatus("COMPLETED");
+            } else if (now.isBefore(session.getStartTime())) {
+                session.setStatus("UPCOMING");
+            } else if (now.isAfter(session.getEndTime()) || session.isExpired()) {
+                session.setStatus("CLOSED");
+            } else {
+                session.setStatus("ACTIVE");
+            }
+            result.add(session);
+        }
+        return result;
+    }
+
+    private List<String> getCompletedSessionIds(String studentId) {
+        List<String> completed = new ArrayList<>();
+        try {
+            List<String> lines = FileHandler.readFile("backend/attempts.txt");
+            for (String line : lines) {
+                if (line.trim().isEmpty()) continue;
+                String[] parts = line.split("\\|");
+                // Format: attemptId|sessionId|examId|studentId|startTime|submitTime|answers|status
+                if (parts.length >= 8 && parts[3].equals(studentId)) {
+                    String status = parts[7];
+                    if ("SUBMITTED".equals(status) || "TIMEOUT".equals(status)) {
+                        completed.add(parts[1]); // sessionId
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // File might not exist yet
+        }
+        return completed;
     }
 
     /**

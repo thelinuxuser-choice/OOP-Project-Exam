@@ -1,5 +1,6 @@
-Q002|EX001|Explain Polymorphism in OOP|SHORT|NULL|runtime method overriding|15
-Q002|EX001|Explain polymorphism|SHORT|NULL|runtime method overriding|10
-Q713|EX001|QQQ|MCQ|2,3,3|3|3
-Q448|EX003|test|MCQ|2,3,4|4|1
-Q260|EX005|2e2e2e|MCQ|2,3|2|1
+Q001|EX001|Which access modifier restricts visibility the most in Java?|MCQ|public,protected,private,default|private|2
+Q002|EX001|Explain the difference between method overloading and overriding.|SHORT|NULL|Overloading: same name different params. Overriding: same signature in subclass|10
+Q003|EX001|What is the primary purpose of an abstract class?|MCQ|Prevent inheritance,Provide base implementation,Create instances,Allow multiple inheritance|Provide base implementation|2
+Q004|EX002|What is the time complexity of binary search?|MCQ|O(n),O(log n),O(n^2),O(1)|O(log n)|2
+Q005|EX002|Explain how a hash table works.|SHORT|NULL|Uses hash function to map keys to array indices|10
+Q006|EX003|Which OOP principle is demonstrated by encapsulation?|MCQ|Inheritance,Polymorphism,Abstraction,Data hiding|Data hiding|2

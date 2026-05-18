@@ -1,9 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta http-equiv="refresh" content="0; URL=/notifications" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - UniExam Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <p>Redirecting to Notifications backend...</p>
+    <nav id="sidebar">
+        <div class="sidebar-header"><i class="fas fa-university"></i> UniExam Portal</div>
+        <ul class="list-unstyled components">
+            <p class="text-center mb-0 border-bottom pb-3"><small>Main Navigation</small></p>
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="users.html"><i class="fas fa-users"></i> Users</a></li>
+            <li><a href="exams.html"><i class="fas fa-file-alt"></i> Exams</a></li>
+            <li><a href="questions.html"><i class="fas fa-question-circle"></i> Questions</a></li>
+            <li><a href="exam-session.html"><i class="fas fa-laptop-code"></i> Exam Sessions</a></li>
+            <li><a href="results.html"><i class="fas fa-chart-bar"></i> Results</a></li>
+            <li><a href="feedback.html"><i class="fas fa-comments"></i> Feedback</a></li>
+            <li class="active"><a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a></li>
+        </ul>
+        <ul class="list-unstyled mt-auto mb-4 w-100 position-absolute bottom-0">
+            <li><a href="login.html" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+    <div id="content">
+        <nav class="top-navbar">
+            <button type="button" id="sidebarCollapse" class="navbar-btn"><i class="fas fa-bars"></i></button>
+            <div class="user-profile-nav">
+                <span class="d-none d-md-block text-muted">Welcome, <strong id="navUserName">User</strong></span>
+                <div class="avatar" id="navAvatar">U</div>
+            </div>
+        </nav>
+        <div class="page-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h3 mb-0 text-gray-800">Notifications</h2>
+                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#notifModal"><i class="fas fa-plus me-1"></i> New Notification</button>
+            </div>
+            <div class="row mb-4">
+                <div class="col-xl-4 col-md-6 mb-3"><div class="card stat-card h-100"><div class="stat-icon primary shadow"><i class="fas fa-bell"></i></div><div class="stat-details"><p>Total</p><h3 id="totalNotifs">0</h3></div></div></div>
+                <div class="col-xl-4 col-md-6 mb-3"><div class="card stat-card h-100"><div class="stat-icon success shadow"><i class="fas fa-check"></i></div><div class="stat-details"><p>Active</p><h3 id="activeNotifs">0</h3></div></div></div>
+                <div class="col-xl-4 col-md-6 mb-3"><div class="card stat-card h-100"><div class="stat-icon warning shadow"><i class="fas fa-times-circle"></i></div><div class="stat-details"><p>Expired</p><h3 id="expiredNotifs">0</h3></div></div></div>
+            </div>
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">All Notifications</h6></div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush" id="notifList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="notifModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog"><div class="modal-content">
+          <div class="modal-header bg-light"><h5 class="modal-title">Create Notification</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <form id="notifForm">
+                <div class="mb-3"><label class="form-label">Title</label><input type="text" class="form-control" id="nfTitle" required></div>
+                <div class="mb-3"><label class="form-label">Message</label><textarea class="form-control" id="nfMessage" rows="3" required></textarea></div>
+                <div class="mb-3"><label class="form-label">Target Role</label><select class="form-select" id="nfRole"><option value="ALL">All</option><option value="STUDENT">Students</option><option value="LECTURER">Lecturers</option><option value="ADMIN">Admins</option></select></div>
+            </form>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="submitNotif()">Send</button></div>
+      </div></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Save URL params to localStorage if present
+        const params = new URLSearchParams(window.location.search);
+        const userId = params.get("userId");
+        const role = params.get("role");
+        if (userId && role) {
+            localStorage.setItem("userId", userId);
+            localStorage.setItem("role", role.toUpperCase());
+        }
+    </script>
+    <script src="js/mock-data.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/access-control.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded',()=>{loadNotifs()});
+    async function loadNotifs(){const container=document.getElementById('notifList');let list=[];let apiFailed=false;
+    try{const res=await fetch('/api/notifications');if(res.ok){list=await res.json()}else{apiFailed=true}}catch(e){console.log('API unavailable, using mock');apiFailed=true}
+    if(apiFailed||list===null){list=mockData.notifications.map((n,i)=>({notificationId:'N00'+(i+1),title:n.title,message:n.message,targetRole:'ALL',status:i<2?'Active':'Expired',createdDate:n.date}))}
+    document.getElementById('totalNotifs').textContent=list.length;document.getElementById('activeNotifs').textContent=list.filter(n=>n.status==='Active').length;document.getElementById('expiredNotifs').textContent=list.filter(n=>n.status==='Expired').length;
+    container.innerHTML='';list.forEach(n=>{const iconMap={warning:'fa-exclamation-triangle text-warning',success:'fa-check-circle text-success',info:'fa-info-circle text-info'};let ic='fa-bell text-primary';if(n.type&&iconMap[n.type])ic=iconMap[n.type];const sc=n.status==='Active'?'bg-success':'bg-secondary';
+    const div=document.createElement('div');div.className='list-group-item px-0';div.innerHTML=`<div class="d-flex w-100 justify-content-between"><h6 class="mb-1"><i class="fas ${ic} me-2"></i>${n.title} <span class="badge ${sc} ms-2">${n.status||'Active'}</span></h6><small class="text-muted">${n.createdDate||n.date||''}</small></div><p class="mb-1 text-muted small">${n.message}</p><div class="mt-1"><span class="badge bg-outline-secondary border text-dark me-2"><i class="fas fa-users me-1"></i>${n.targetRole||'ALL'}</span><button class="btn btn-sm btn-outline-warning me-1" onclick="expireNotif('${n.notificationId}')" title="Expire"><i class="fas fa-clock"></i></button><button class="btn btn-sm btn-outline-danger" onclick="deleteNotif('${n.notificationId}')" title="Delete"><i class="fas fa-trash"></i></button></div>`;container.appendChild(div)})}
+    async function submitNotif(){const t=document.getElementById('nfTitle').value,m=document.getElementById('nfMessage').value,r=document.getElementById('nfRole').value;if(!t||!m){alert('Fill all fields');return}try{const p=new URLSearchParams({title:t,message:m,targetRole:r});await fetch('/api/notifications/add',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:p.toString()});alert('Notification sent!');bootstrap.Modal.getInstance(document.getElementById('notifModal')).hide();loadNotifs()}catch(e){alert('Sent (mock)')}}
+    async function expireNotif(id){try{await fetch('/api/notifications/expire/'+id);loadNotifs()}catch(e){alert('Expired (mock)')}}
+    async function deleteNotif(id){if(!confirm('Delete this notification?'))return;try{await fetch('/api/notifications/delete/'+id);loadNotifs()}catch(e){alert('Deleted (mock)')}}
+    </script>
 </body>
 </html>

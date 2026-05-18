@@ -29,7 +29,10 @@ public class ExamSessionController {
     // --- STUDENT ENDPOINTS ---
 
     @GetMapping("/student/exam-sessions")
-    public ResponseEntity<List<ExamSession>> getActiveSessionsForStudent() {
+    public ResponseEntity<List<ExamSession>> getStudentSessions(@RequestParam(required = false) String studentId) {
+        if (studentId != null && !studentId.isEmpty()) {
+            return ResponseEntity.ok(examSessionService.getStudentSessions(studentId));
+        }
         return ResponseEntity.ok(examSessionService.getActiveSessions());
     }
 

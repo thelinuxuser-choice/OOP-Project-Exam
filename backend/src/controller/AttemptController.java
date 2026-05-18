@@ -88,4 +88,28 @@ public class AttemptController {
         List<ExamAttempt> history = attemptService.getStudentHistory(studentId);
         return ResponseEntity.ok(history);
     }
+
+    @PostMapping("/attempts/submit")
+    public ResponseEntity<?> submitDirect(@RequestBody Map<String, Object> payload) {
+        try {
+            String sessionId = (String) payload.get("sessionId");
+            String examId = (String) payload.get("examId");
+            String studentId = (String) payload.get("studentId");
+            @SuppressWarnings("unchecked")
+            Map<String, String> answers = (Map<String, String>) payload.get("answers");
+            
+            if (studentId == null || sessionId == null) {
+                return ResponseEntity.badRequest().body("sessionId and studentId are required");
+            }
+            
+            // Start and immediately submit attempt
+            ExamAttempt attempt = attemptService.startAttempt(sessionId, studentId);
+            String answersJson = answers != null ? answers.toString() : "";
+            attemptService.submitAttempt(attempt.getAttemptId(), answersJson);
+            
+            return ResponseEntity.ok("Attempt submitted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to submit: " + e.getMessage());
+        }
+    }
 }

@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Service
 public class ExamService {
-    private static final String FILE_PATH = "exams.txt";
+    private static final String FILE_PATH = "backend/exams.txt";
     private List<Exam> examList;
 
     public ExamService() {
@@ -88,5 +88,54 @@ public class ExamService {
             saveAllToFile();
         }
         return removed;
+    }
+
+    public boolean addExam(String title, String courseCode, String duration, String marks, String date, String status, String instructions) {
+        try {
+            String newId = generateNextId();
+            int durationInt = Integer.parseInt(duration);
+            int marksInt = Integer.parseInt(marks);
+            if (status == null || status.trim().isEmpty()) {
+                status = "Draft";
+            }
+            Exam exam = new Exam(newId, title, courseCode, durationInt, marksInt, date, status, instructions);
+            examList.add(exam);
+            FileHandler.appendFile(FILE_PATH, exam.toFileString());
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateExam(String id, String title, String courseCode, String duration, String marks, String date, String status, String instructions) {
+        try {
+            int durationInt = Integer.parseInt(duration);
+            int marksInt = Integer.parseInt(marks);
+            Exam updatedExam = new Exam(id, title, courseCode, durationInt, marksInt, date, status, instructions);
+            return updateExam(id, updatedExam);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private String generateNextId() {
+        if (examList.isEmpty()) {
+            return "EX001";
+        }
+        int maxNum = 0;
+        for (Exam e : examList) {
+            String id = e.getId();
+            if (id.startsWith("EX")) {
+                try {
+                    int num = Integer.parseInt(id.substring(2));
+                    if (num > maxNum) {
+                        maxNum = num;
+                    }
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        return String.format("EX%03d", maxNum + 1);
     }
 }

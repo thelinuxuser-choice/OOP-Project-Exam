@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Service
 public class QuestionService {
-    private static final String FILE_PATH = "questions.txt";
+    private static final String FILE_PATH = "backend/questions.txt";
     private List<Question> questionList;
 
     public QuestionService() {
@@ -95,6 +95,13 @@ public class QuestionService {
             }
         }
         return resultList;
+    }
+
+    /**
+     * Alias for getQuestionsByExam for controller compatibility.
+     */
+    public List<Question> getQuestionsByExamId(String examId) {
+        return getQuestionsByExam(examId);
     }
 
     /**

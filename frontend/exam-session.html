@@ -3,158 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Session - UniExam Portal</title>
-    <!-- Bootstrap CSS -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Exam Sessions - UniExam Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-light">
-
-    <!-- Minimal Navbar for Exam Mode -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#"><i class="fas fa-university me-2"></i> UniExam Portal - Examination Mode</a>
-            <div class="d-flex align-items-center text-white">
-                <span class="me-3"><i class="fas fa-user-graduate me-1"></i> John Doe (S12345)</span>
-            </div>
-        </div>
+<body>
+    <nav id="sidebar">
+        <div class="sidebar-header"><i class="fas fa-university"></i> UniExam Portal</div>
+        <ul class="list-unstyled components">
+            <p class="text-center mb-0 border-bottom pb-3"><small>Main Navigation</small></p>
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="users.html"><i class="fas fa-users"></i> Users</a></li>
+            <li><a href="exams.html"><i class="fas fa-file-alt"></i> Exams</a></li>
+            <li><a href="questions.html"><i class="fas fa-question-circle"></i> Questions</a></li>
+            <li class="active"><a href="exam-session.html"><i class="fas fa-laptop-code"></i> Exam Sessions</a></li>
+            <li><a href="results.html"><i class="fas fa-chart-bar"></i> Results</a></li>
+            <li><a href="feedback.html"><i class="fas fa-comments"></i> Feedback</a></li>
+            <li><a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a></li>
+        </ul>
+        <ul class="list-unstyled mt-auto mb-4 w-100 position-absolute bottom-0">
+            <li><a href="login.html" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
     </nav>
 
-    <div class="container mt-4">
-        
-        <div class="exam-header">
-            <div>
-                <h4 class="mb-1 text-primary">CS201 - Data Structures Midterm</h4>
-                <p class="text-muted mb-0"><small>Total Questions: 30 | Total Marks: 100</small></p>
+    <div id="content">
+        <nav class="top-navbar">
+            <button type="button" id="sidebarCollapse" class="navbar-btn"><i class="fas fa-bars"></i></button>
+            <div class="user-profile-nav">
+                <span class="d-none d-md-block text-muted">Welcome, <strong id="navUserName">User</strong></span>
+                <div class="avatar" id="navAvatar">U</div>
             </div>
-            <div class="timer shadow-sm">
-                <i class="fas fa-stopwatch text-warning"></i>
-                <span id="timeRemaining">01:45:00</span>
+        </nav>
+
+        <div class="page-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h3 mb-0 text-gray-800">Available Exams</h2>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card stat-card h-100">
+                        <div class="stat-icon success shadow"><i class="fas fa-play-circle"></i></div>
+                        <div class="stat-details">
+                            <p>Active Exams</p>
+                            <h3 id="activeCount">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card stat-card h-100">
+                        <div class="stat-icon warning shadow"><i class="fas fa-clock"></i></div>
+                        <div class="stat-details">
+                            <p>Upcoming</p>
+                            <h3 id="upcomingCount">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card stat-card h-100">
+                        <div class="stat-icon secondary shadow"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-details">
+                            <p>Completed</p>
+                            <h3 id="completedCount">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exam List -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Exam Sessions</h6>
+                </div>
+                <div class="card-body">
+                    <div id="examListContainer">
+                        <!-- Exams populated by JS -->
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="row">
-            <!-- Question Area -->
-            <div class="col-lg-8 mb-4">
-                <div class="card shadow-sm h-100 border-0">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-                            <h5 class="text-secondary">Question <span id="currentQNum">1</span> of 30</h5>
-                            <span class="badge bg-primary">2 Marks</span>
-                        </div>
-                        
-                        <div class="question-content mb-4">
-                            <h4 class="mb-4" style="line-height: 1.5; font-weight: 500;">
-                                Which of the following access modifiers restricts visibility the most in a Java class?
-                            </h4>
-                            
-                            <div class="options-container">
-                                <label class="option-label">
-                                    <input type="radio" name="answer" class="me-3" style="transform: scale(1.5);">
-                                    <span>A. public</span>
-                                </label>
-                                <label class="option-label">
-                                    <input type="radio" name="answer" class="me-3" style="transform: scale(1.5);">
-                                    <span>B. protected</span>
-                                </label>
-                                <label class="option-label">
-                                    <input type="radio" name="answer" class="me-3" style="transform: scale(1.5);" checked>
-                                    <span>C. private</span>
-                                </label>
-                                <label class="option-label">
-                                    <input type="radio" name="answer" class="me-3" style="transform: scale(1.5);">
-                                    <span>D. default (package-private)</span>
-                                </label>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Save URL params to localStorage if present
+        const params = new URLSearchParams(window.location.search);
+        const userId = params.get("userId");
+        const role = params.get("role");
+        if (userId && role) {
+            localStorage.setItem("userId", userId);
+            localStorage.setItem("role", role.toUpperCase());
+        }
+    </script>
+    <script src="js/mock-data.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/access-control.js"></script>
+    <script>
+        let examSessions = [];
+
+        async function loadExamSessions() {
+            const container = document.getElementById('examListContainer');
+            const studentId = localStorage.getItem('userId');
+            let sessions = [];
+            let apiFailed = false;
+
+            try {
+                // Use student-specific endpoint if logged in
+                const url = studentId ? `/student/exam-sessions?studentId=${studentId}` : '/student/exam-sessions';
+                const res = await fetch(url);
+                if (res.ok) {
+                    sessions = await res.json();
+                } else {
+                    apiFailed = true;
+                }
+            } catch (e) {
+                console.log('API unavailable, using mock data');
+                apiFailed = true;
+            }
+
+            if (apiFailed || !sessions || sessions.length === 0) {
+                // Mock data for testing
+                sessions = [
+                    {
+                        sessionId: 'S001',
+                        examId: 'EX001',
+                        examTitle: 'CS204 Object Oriented Programming Final',
+                        courseCode: 'CS204',
+                        startTime: new Date().toISOString(),
+                        endTime: new Date(Date.now() + 3*60*60*1000).toISOString(),
+                        durationMinutes: 180,
+                        status: 'ACTIVE'
+                    },
+                    {
+                        sessionId: 'S002',
+                        examId: 'EX002',
+                        examTitle: 'CS301 Algorithms Lab',
+                        courseCode: 'CS301',
+                        startTime: new Date(Date.now() + 24*60*60*1000).toISOString(),
+                        endTime: new Date(Date.now() + 26*60*60*1000).toISOString(),
+                        durationMinutes: 120,
+                        status: 'UPCOMING'
+                    }
+                ];
+            }
+
+            // Mark locally completed exams
+            const completedLocal = JSON.parse(localStorage.getItem('completedExams') || '[]');
+            sessions = sessions.map(s => {
+                if (completedLocal.includes(s.sessionId)) {
+                    return { ...s, status: 'COMPLETED' };
+                }
+                return s;
+            });
+
+            examSessions = sessions;
+
+            // Update stats - use backend status
+            const active = sessions.filter(s => s.status === 'ACTIVE').length;
+            const upcoming = sessions.filter(s => s.status === 'UPCOMING').length;
+            const completed = sessions.filter(s => s.status === 'COMPLETED').length;
+            const closed = sessions.filter(s => s.status === 'CLOSED').length;
+
+            document.getElementById('activeCount').textContent = active;
+            document.getElementById('upcomingCount').textContent = upcoming;
+            document.getElementById('completedCount').textContent = completed + closed;
+
+            // Render sessions
+            if (sessions.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-5"><i class="fas fa-clipboard fa-3x mb-3"></i><p>No exam sessions available</p></div>';
+                return;
+            }
+
+            let html = '<div class="row">';
+            sessions.forEach(session => {
+                const startTime = new Date(session.startTime);
+                const endTime = new Date(session.endTime);
+                const status = session.status || 'UNKNOWN';
+
+                let statusBadge = '';
+                let btnHtml = '';
+                let cardClass = '';
+
+                switch(status) {
+                    case 'ACTIVE':
+                        statusBadge = '<span class="badge bg-success">Active Now</span>';
+                        btnHtml = `<a href="exam-taking.html?sessionId=${session.sessionId}&examId=${session.examId}" class="btn btn-primary"><i class="fas fa-play me-1"></i> Start Exam</a>`;
+                        cardClass = 'border-success';
+                        break;
+                    case 'UPCOMING':
+                        statusBadge = '<span class="badge bg-warning text-dark">Upcoming</span>';
+                        btnHtml = `<button class="btn btn-outline-secondary" disabled><i class="fas fa-clock me-1"></i> Starts ${startTime.toLocaleDateString()}</button>`;
+                        break;
+                    case 'COMPLETED':
+                        statusBadge = '<span class="badge bg-info">Completed</span>';
+                        btnHtml = `<a href="results.html?sessionId=${session.sessionId}" class="btn btn-outline-info"><i class="fas fa-chart-bar me-1"></i> View Result</a>`;
+                        cardClass = 'border-info';
+                        break;
+                    case 'CLOSED':
+                        statusBadge = '<span class="badge bg-secondary">Closed</span>';
+                        btnHtml = `<button class="btn btn-outline-secondary" disabled><i class="fas fa-lock me-1"></i> Not Available</button>`;
+                        break;
+                    default:
+                        statusBadge = '<span class="badge bg-light text-dark">Unknown</span>';
+                        btnHtml = `<button class="btn btn-outline-secondary" disabled>Unavailable</button>`;
+                }
+
+                html += `
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm ${cardClass}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0">${session.examTitle}</h5>
+                                    ${statusBadge}
+                                </div>
+                                <p class="card-text text-muted small mb-2">
+                                    <i class="fas fa-book me-1"></i> ${session.courseCode} | 
+                                    <i class="fas fa-hashtag me-1"></i> ${session.examId}
+                                </p>
+                                <p class="card-text text-muted small mb-2">
+                                    <i class="fas fa-calendar me-1"></i> ${startTime.toLocaleDateString()} ${startTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                </p>
+                                <p class="card-text text-muted small mb-3">
+                                    <i class="fas fa-hourglass-half me-1"></i> ${session.durationMinutes} minutes
+                                </p>
+                                <div class="d-grid">
+                                    ${btnHtml}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer bg-white border-top-0 p-4 d-flex justify-content-between">
-                        <button class="btn btn-outline-secondary px-4"><i class="fas fa-arrow-left me-2"></i> Previous</button>
-                        <button class="btn btn-outline-warning px-4"><i class="fas fa-flag me-2"></i> Flag for Review</button>
-                        <button class="btn btn-primary px-4">Next <i class="fas fa-arrow-right ms-2"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Navigation Area -->
-            <div class="col-lg-4 mb-4">
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-white">
-                        <h6 class="m-0 font-weight-bold text-primary">Question Navigator</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between mb-3 text-muted small">
-                            <span><span class="d-inline-block bg-primary rounded-circle me-1" style="width:10px;height:10px;"></span> Answered</span>
-                            <span><span class="d-inline-block bg-white border rounded-circle me-1" style="width:10px;height:10px;"></span> Not Answered</span>
-                            <span><span class="d-inline-block bg-warning rounded-circle me-1" style="width:10px;height:10px;"></span> Flagged</span>
-                        </div>
-                        
-                        <div class="question-nav-grid" id="navGrid">
-                            <!-- JS populated -->
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-grid gap-2">
-                    <button class="btn btn-success btn-lg shadow" onclick="submitExam()">
-                        <i class="fas fa-check-circle me-2"></i> Submit Exam
-                    </button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Bootstrap Bundle JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Generate Mock Navigation Buttons
-        document.addEventListener('DOMContentLoaded', () => {
-            const grid = document.getElementById('navGrid');
-            for(let i=1; i<=30; i++) {
-                const btn = document.createElement('button');
-                btn.className = 'q-nav-btn';
-                btn.innerText = i;
-                
-                // Simulate states
-                if(i === 1) btn.classList.add('current', 'answered');
-                else if(i < 15) btn.classList.add('answered');
-                else if(i === 18) { btn.classList.add('answered'); btn.style.backgroundColor = '#ffc107'; btn.style.borderColor = '#ffc107'; }
-                
-                grid.appendChild(btn);
-            }
-        });
-
-        // Simple Timer logic
-        let timeInSeconds = 105 * 60; // 1hr 45mins
-        const timerSpan = document.getElementById('timeRemaining');
-        
-        setInterval(() => {
-            if(timeInSeconds <= 0) return submitExam();
-            timeInSeconds--;
-            
-            const h = Math.floor(timeInSeconds / 3600);
-            const m = Math.floor((timeInSeconds % 3600) / 60);
-            const s = timeInSeconds % 60;
-            
-            timerSpan.innerText = 
-                `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                
-            if(timeInSeconds < 300) { // last 5 mins
-                timerSpan.classList.remove('text-warning');
-                timerSpan.classList.add('text-danger');
-            }
-        }, 1000);
-
-        function submitExam() {
-            if(confirm("Are you sure you want to submit the exam? You cannot undo this action.")) {
-                alert("Exam submitted successfully!");
-                window.location.href = "dashboard.html";
-            }
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadExamSessions();
+        });
     </script>
 </body>
 </html>

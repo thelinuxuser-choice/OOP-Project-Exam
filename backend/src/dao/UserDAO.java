@@ -7,14 +7,9 @@ import java.util.*;
 
 public class UserDAO {
 
-    // Dynamically find users.txt whether running from /backend or project root
+    // Always use backend/users.txt
     private static String getFilePath() {
-        java.io.File f = new java.io.File("users.txt");
-        if (f.exists()) return f.getAbsolutePath();
-        java.io.File f2 = new java.io.File("backend/users.txt");
-        if (f2.exists()) return f2.getAbsolutePath();
-        // Default fallback: create in working directory
-        return new java.io.File(System.getProperty("user.dir"), "users.txt").getAbsolutePath();
+        return "backend/users.txt";
     }
 
     // =========================

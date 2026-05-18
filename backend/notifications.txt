@@ -1,1 +1,3 @@
-NT001|Exam Schedule|Midterms start next week.|ALL|ACTIVE|2023-10-27 10:00:00
+NT001|Server Maintenance Window|The examination server will undergo routine maintenance on Saturday.|ALL|ACTIVE|2026-05-15 10:00:00
+NT002|Final Grades Published|The final results for CS301 have been verified and published.|ALL|ACTIVE|2026-05-14 14:30:00
+NT003|Room Change for CS204 Final|The venue has been moved from Hall A to Main Computing Lab.|ALL|EXPIRED|2026-05-10 09:00:00

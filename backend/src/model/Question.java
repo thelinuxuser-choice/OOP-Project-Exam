@@ -1,9 +1,5 @@
 package model;
 
-/**
- * Abstract base class representing a Question in the examination system.
- * Demonstrates Abstraction and Encapsulation.
- */
 public abstract class Question {
     private String questionId;
     private String examId;

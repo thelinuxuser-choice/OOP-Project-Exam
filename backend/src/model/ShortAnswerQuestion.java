@@ -1,9 +1,5 @@
 package model;
 
-/**
- * Represents a Short Answer Question.
- * Demonstrates Inheritance by extending Question.
- */
 public class ShortAnswerQuestion extends Question {
     private String correctAnswer;
 

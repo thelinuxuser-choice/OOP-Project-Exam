@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - OERMS</title>
+    <title>My Profile - UniExam Portal</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -16,7 +16,7 @@
     <!-- Sidebar Layout -->
     <nav id="sidebar">
         <div class="sidebar-header">
-            <i class="fas fa-university"></i> OERMS
+            <i class="fas fa-university"></i> UniExam Portal
         </div>
 
         <ul class="list-unstyled components">
@@ -165,90 +165,45 @@
 
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Save URL params to localStorage if present
+        const params = new URLSearchParams(window.location.search);
+        const userId = params.get("userId");
+        const role = params.get("role");
+        if (userId && role) {
+            localStorage.setItem("userId", userId);
+            localStorage.setItem("role", role.toUpperCase());
+        }
+    </script>
     <!-- Custom Scripts -->
-    
     <script src="js/main.js"></script>
+    <script src="js/access-control.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
+            const userId = localStorage.getItem("userId");
+            const role = localStorage.getItem("role");
 
-            // =========================
-            // READ FROM URL
-            // =========================
-            const params = new URLSearchParams(window.location.search);
-
-            let userId = params.get("userId");
-            let role = params.get("role");
-
-            // =========================
-            // FALLBACK (LOCAL STORAGE)
-            // =========================
-            if (!userId || !role) {
-                userId = localStorage.getItem("userId");
-                role = localStorage.getItem("role");
-            } else {
-                localStorage.setItem("userId", userId);
-                localStorage.setItem("role", role.toUpperCase());
-            }
-
-            // =========================
-            // SECURITY CHECK
-            // =========================
-            if (!userId || !role) {
-                window.location.href = "login.html";
-                return;
-            }
-
-            role = role.toUpperCase();
-
-            // =========================
-            // NAVBAR UI
-            // =========================
-            const navUserName = document.getElementById("navUserName");
-            const navAvatar = document.getElementById("navAvatar");
+            // Update profile UI
             const profileAvatar = document.getElementById("profileAvatar");
-
-            if (navUserName) {
-                navUserName.innerText = role;
-            }
-
-            if (navAvatar) {
-                navAvatar.innerText = role.charAt(0).toUpperCase();
-            }
-
             if (profileAvatar) {
-                profileAvatar.innerText = role.charAt(0).toUpperCase();
+                profileAvatar.innerText = (role || 'U').charAt(0).toUpperCase();
             }
 
-            // =========================
-            // FETCH USER DATA
-            // =========================
+            // Fetch user data
             try {
-                const res = await fetch(`${window.location.origin}/users`);
+                const res = await fetch('/users');
                 const users = await res.json();
+                const user = users.find(u => u.id.trim().toLowerCase() === (userId || '').trim().toLowerCase());
 
-                const user = users.find(u =>
-                    u.id.trim().toLowerCase() === userId.trim().toLowerCase()
-                );
-
-                if (!user) {
-                    alert("User not found!");
-                    window.location.href = "login.html";
-                    return;
+                if (user) {
+                    document.getElementById("userName").innerText = user.name;
+                    document.getElementById("userEmail").innerText = user.email;
+                    document.getElementById("userRole").innerText = user.role;
+                    document.getElementById("userId").innerText = user.id;
                 }
-
-                // =========================
-                // PROFILE UI
-                // =========================
-                document.getElementById("userName").innerText = user.name;
-                document.getElementById("userEmail").innerText = user.email;
-                document.getElementById("userRole").innerText = user.role;
-                document.getElementById("userId").innerText = user.id;
-
             } catch (err) {
                 console.error(err);
-                alert("Error loading user");
             }
-
         });
     </script>
 </body>

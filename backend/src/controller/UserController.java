@@ -75,11 +75,11 @@ public class UserController {
                 }
 
                 if (realRole.equals("LECTURER")) {
-                    return "redirect:/dashboard.html?userId=" + user.getId() + "&role=" + realRole;
+                    return "redirect:/exams.html?userId=" + user.getId() + "&role=" + realRole;
                 }
 
                 if (realRole.equals("STUDENT")) {
-                    return "redirect:/dashboard.html?userId=" + user.getId() + "&role=" + realRole;
+                    return "redirect:/exam-session.html?userId=" + user.getId() + "&role=" + realRole;
                 }
             }
         }

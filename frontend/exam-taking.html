@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam in Progress - UniExam Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        .timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .timer.warning { background: #fff3cd; color: #856404; }
+        .timer.danger { background: #f8d7da; color: #721c24; }
+        .option-label {
+            display: block;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-label:hover { border-color: #4e73df; background: #f8f9ff; }
+        .option-label.selected { border-color: #4e73df; background: #4e73df; color: white; }
+        .option-label input[type="radio"] { margin-right: 0.75rem; }
+        .q-nav-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .q-nav-btn:hover { background: #f8f9fa; }
+        .q-nav-btn.current { border-color: #4e73df; border-width: 2px; }
+        .q-nav-btn.answered { background: #4e73df; color: white; }
+        .q-nav-btn.flagged { background: #ffc107; border-color: #ffc107; }
+        .question-nav-grid { display: flex; flex-wrap: wrap; justify-content: center; }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="fas fa-university me-2"></i> UniExam Portal - Examination Mode</a>
+            <div class="d-flex align-items-center text-white">
+                <span class="me-3"><i class="fas fa-user-graduate me-1"></i> <span id="studentName">Student</span></span>
+                <button class="btn btn-outline-light btn-sm" onclick="exitExam()"><i class="fas fa-sign-out-alt"></i> Exit</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="exam-header">
+            <div>
+                <h4 class="mb-1 text-primary" id="examTitle">Loading...</h4>
+                <p class="text-muted mb-0">
+                    <small>Question <span id="currentQNum">1</span> of <span id="totalQNum">0</span> | 
+                    Total Marks: <span id="totalMarks">0</span></small>
+                </p>
+            </div>
+            <div class="timer" id="timerDisplay">
+                <i class="fas fa-stopwatch text-warning me-2"></i>
+                <span id="timeRemaining">--:--:--</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Question Area -->
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow-sm h-100 border-0">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                            <h5 class="text-secondary mb-0">Question <span id="qNumber">1</span></h5>
+                            <span class="badge bg-primary" id="qMarks">0 Marks</span>
+                        </div>
+                        
+                        <div class="question-content mb-4">
+                            <h4 class="mb-4" style="line-height: 1.5; font-weight: 500;" id="questionText">
+                                Loading question...
+                            </h4>
+                            
+                            <div class="options-container" id="optionsContainer">
+                                <!-- Options populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-top-0 p-4 d-flex justify-content-between">
+                        <button class="btn btn-outline-secondary px-4" onclick="prevQuestion()" id="btnPrev">
+                            <i class="fas fa-arrow-left me-2"></i> Previous
+                        </button>
+                        <button class="btn btn-outline-warning px-4" onclick="toggleFlag()" id="btnFlag">
+                            <i class="fas fa-flag me-2"></i> <span id="flagText">Flag for Review</span>
+                        </button>
+                        <button class="btn btn-primary px-4" onclick="nextQuestion()" id="btnNext">
+                            Next <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Area -->
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white">
+                        <h6 class="m-0 font-weight-bold text-primary">Question Navigator</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3 text-muted small">
+                            <span><span class="d-inline-block bg-primary rounded-circle me-1" style="width:10px;height:10px;"></span> Answered</span>
+                            <span><span class="d-inline-block bg-white border rounded-circle me-1" style="width:10px;height:10px;"></span> Not Answered</span>
+                            <span><span class="d-inline-block bg-warning rounded-circle me-1" style="width:10px;height:10px;"></span> Flagged</span>
+                        </div>
+                        
+                        <div class="question-nav-grid" id="navGrid">
+                            <!-- JS populated -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success btn-lg shadow" onclick="submitExam()">
+                        <i class="fas fa-check-circle me-2"></i> Submit Exam
+                    </button>
+                </div>
+                
+                <div class="card shadow-sm border-0 mt-3">
+                    <div class="card-body text-center">
+                        <p class="mb-1 text-muted small">Answered: <strong id="answeredCount">0</strong> / <span id="totalCount">0</span></p>
+                        <p class="mb-0 text-muted small">Flagged: <strong id="flaggedCount">0</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Confirmation Modal -->
+    <div class="modal fade" id="submitModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Submit Exam?</h5>
+                </div>
+                <div class="modal-body">
+                    <p>You have answered <strong id="modalAnswered">0</strong> out of <strong id="modalTotal">0</strong> questions.</p>
+                    <p class="text-warning" id="modalUnansweredWarning" style="display:none;">
+                        <i class="fas fa-exclamation-triangle"></i> You have <strong id="modalUnanswered">0</strong> unanswered questions!
+                    </p>
+                    <p class="mb-0">Are you sure you want to submit? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Continue Exam</button>
+                    <button type="button" class="btn btn-success" onclick="confirmSubmit()">Submit Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Save URL params to localStorage if present
+        const params = new URLSearchParams(window.location.search);
+        const userId = params.get("userId");
+        const role = params.get("role");
+        if (userId && role) {
+            localStorage.setItem("userId", userId);
+            localStorage.setItem("role", role.toUpperCase());
+        }
+    </script>
+    <script src="js/access-control.js"></script>
+    <script>
+        // Get URL params for exam
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('sessionId');
+        const examId = urlParams.get('examId');
+
+        // Exam state
+        let examData = null;
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let answers = {}; // questionId -> selectedOption
+        let flagged = new Set(); // questionIndices
+        let timeRemaining = 0;
+        let timerInterval = null;
+
+        // Load exam data
+        async function loadExam() {
+            try {
+                // Try to get from API first
+                const res = await fetch(`/student/exam-sessions`);
+                const sessions = await res.json();
+                examData = sessions.find(s => s.sessionId === sessionId);
+            } catch (e) {
+                console.log('Using mock data');
+            }
+
+            // Fallback to mock data
+            if (!examData) {
+                examData = {
+                    sessionId: sessionId || 'S001',
+                    examId: examId || 'EX001',
+                    examTitle: 'CS204 Object Oriented Programming Final',
+                    courseCode: 'CS204',
+                    durationMinutes: 180,
+                    startTime: new Date().toISOString(),
+                    endTime: new Date(Date.now() + 3*60*60*1000).toISOString(),
+                    status: 'ACTIVE'
+                };
+            }
+
+            // Load questions for this exam
+            await loadQuestions();
+
+            // Initialize exam
+            document.getElementById('examTitle').textContent = examData.examTitle;
+            document.getElementById('totalQNum').textContent = questions.length;
+            document.getElementById('totalCount').textContent = questions.length;
+            document.getElementById('totalMarks').textContent = questions.reduce((sum, q) => sum + (q.marks || 0), 0);
+            
+            // Start timer
+            timeRemaining = examData.durationMinutes * 60;
+            startTimer();
+
+            // Render first question
+            renderQuestion(0);
+            renderNavGrid();
+            updateStats();
+        }
+
+        async function loadQuestions() {
+            try {
+                const res = await fetch(`/questions?examId=${examId}`);
+                if (res.ok) {
+                    questions = await res.json();
+                }
+            } catch (e) {
+                console.log('Using mock questions');
+            }
+
+            // Fallback to mock questions
+            if (!questions || questions.length === 0) {
+                questions = [
+                    {
+                        questionId: 'Q001',
+                        text: 'Which of the following access modifiers restricts visibility the most in a Java class?',
+                        type: 'MCQ',
+                        marks: 2,
+                        options: ['public', 'protected', 'private', 'default (package-private)'],
+                        correct: 'C'
+                    },
+                    {
+                        questionId: 'Q002',
+                        text: 'What is the primary purpose of inheritance in Object Oriented Programming?',
+                        type: 'MCQ',
+                        marks: 2,
+                        options: ['Code reusability', 'Data hiding', 'Polymorphism', 'Encapsulation'],
+                        correct: 'A'
+                    },
+                    {
+                        questionId: 'Q003',
+                        text: 'Explain the difference between method overloading and method overriding.',
+                        type: 'Short Answer',
+                        marks: 10,
+                        options: [],
+                        correct: ''
+                    }
+                ];
+            }
+        }
+
+        function renderQuestion(index) {
+            if (index < 0 || index >= questions.length) return;
+
+            currentQuestionIndex = index;
+            const q = questions[index];
+
+            document.getElementById('currentQNum').textContent = index + 1;
+            document.getElementById('qNumber').textContent = index + 1;
+            document.getElementById('qMarks').textContent = (q.marks || 0) + ' Marks';
+            document.getElementById('questionText').textContent = q.text || q.questionText || 'No question text';
+
+            // Render options
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            if (q.type === 'MCQ' && q.options && q.options.length > 0) {
+                q.options.forEach((opt, i) => {
+                    const label = document.createElement('label');
+                    label.className = 'option-label';
+                    const selected = answers[q.questionId] === String.fromCharCode(65 + i);
+                    if (selected) label.classList.add('selected');
+
+                    label.innerHTML = `
+                        <input type="radio" name="answer" value="${String.fromCharCode(65 + i)}" 
+                            ${selected ? 'checked' : ''} onchange="selectAnswer('${q.questionId}', '${String.fromCharCode(65 + i)}')">
+                        <span>${String.fromCharCode(65 + i)}. ${opt}</span>
+                    `;
+                    container.appendChild(label);
+                });
+            } else {
+                // Short answer
+                const textarea = document.createElement('textarea');
+                textarea.className = 'form-control';
+                textarea.rows = 5;
+                textarea.placeholder = 'Enter your answer here...';
+                textarea.value = answers[q.questionId] || '';
+                textarea.onchange = (e) => selectAnswer(q.questionId, e.target.value);
+                container.appendChild(textarea);
+            }
+
+            // Update button states
+            document.getElementById('btnPrev').disabled = index === 0;
+            document.getElementById('btnNext').innerHTML = index === questions.length - 1 ? 
+                'Finish <i class="fas fa-check ms-2"></i>' : 'Next <i class="fas fa-arrow-right ms-2"></i>';
+
+            // Update flag button
+            const isFlagged = flagged.has(index);
+            document.getElementById('flagText').textContent = isFlagged ? 'Unflag' : 'Flag for Review';
+            document.getElementById('btnFlag').classList.toggle('btn-warning', isFlagged);
+            document.getElementById('btnFlag').classList.toggle('btn-outline-warning', !isFlagged);
+
+            // Update nav grid
+            updateNavGrid();
+        }
+
+        function renderNavGrid() {
+            const grid = document.getElementById('navGrid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < questions.length; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'q-nav-btn';
+                btn.textContent = i + 1;
+                btn.onclick = () => renderQuestion(i);
+                grid.appendChild(btn);
+            }
+            updateNavGrid();
+        }
+
+        function updateNavGrid() {
+            const buttons = document.querySelectorAll('.q-nav-btn');
+            buttons.forEach((btn, i) => {
+                btn.classList.remove('current', 'answered', 'flagged');
+                if (i === currentQuestionIndex) btn.classList.add('current');
+                if (answers[questions[i].questionId]) btn.classList.add('answered');
+                if (flagged.has(i)) btn.classList.add('flagged');
+            });
+        }
+
+        function selectAnswer(questionId, answer) {
+            answers[questionId] = answer;
+            updateNavGrid();
+            updateStats();
+        }
+
+        function toggleFlag() {
+            if (flagged.has(currentQuestionIndex)) {
+                flagged.delete(currentQuestionIndex);
+            } else {
+                flagged.add(currentQuestionIndex);
+            }
+            renderQuestion(currentQuestionIndex);
+            updateStats();
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                renderQuestion(currentQuestionIndex - 1);
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                renderQuestion(currentQuestionIndex + 1);
+            } else {
+                submitExam();
+            }
+        }
+
+        function updateStats() {
+            const answered = Object.keys(answers).length;
+            document.getElementById('answeredCount').textContent = answered;
+            document.getElementById('flaggedCount').textContent = flagged.size;
+        }
+
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    confirmSubmit();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const h = Math.floor(timeRemaining / 3600);
+            const m = Math.floor((timeRemaining % 3600) / 60);
+            const s = timeRemaining % 60;
+            
+            document.getElementById('timeRemaining').textContent = 
+                `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            
+            const timerEl = document.getElementById('timerDisplay');
+            timerEl.classList.remove('warning', 'danger');
+            if (timeRemaining < 300) timerEl.classList.add('danger');
+            else if (timeRemaining < 900) timerEl.classList.add('warning');
+        }
+
+        function submitExam() {
+            const answered = Object.keys(answers).length;
+            const total = questions.length;
+            const unanswered = total - answered;
+
+            document.getElementById('modalAnswered').textContent = answered;
+            document.getElementById('modalTotal').textContent = total;
+            document.getElementById('modalUnanswered').textContent = unanswered;
+            document.getElementById('modalUnansweredWarning').style.display = unanswered > 0 ? 'block' : 'none';
+
+            new bootstrap.Modal(document.getElementById('submitModal')).show();
+        }
+
+        async function confirmSubmit() {
+            clearInterval(timerInterval);
+            window.onbeforeunload = null; // Remove beforeunload warning
+            
+            const studentId = localStorage.getItem('userId') || 'unknown';
+            
+            // Calculate score
+            let correctCount = 0;
+            let totalQuestions = questions.length;
+            questions.forEach(q => {
+                const studentAnswer = answers[q.questionId];
+                if (studentAnswer && q.correctAnswer && 
+                    studentAnswer.toString().trim().toLowerCase() === q.correctAnswer.toString().trim().toLowerCase()) {
+                    correctCount++;
+                }
+            });
+            const score = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+            
+            // Prepare submission data
+            const submission = {
+                sessionId: sessionId,
+                examId: examId,
+                studentId: studentId,
+                answers: answers,
+                score: score,
+                totalQuestions: totalQuestions,
+                correctAnswers: correctCount,
+                submittedAt: new Date().toISOString(),
+                durationMinutes: Math.floor((examData.durationMinutes * 60 - timeRemaining) / 60)
+            };
+
+            let submissionSaved = false;
+            
+            try {
+                // Try to submit to API
+                const res = await fetch('/attempts/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(submission)
+                });
+                if (res.ok) {
+                    submissionSaved = true;
+                }
+            } catch (e) {
+                console.log('API submission failed, will use fallback');
+            }
+
+            // Fallback: store locally and in localStorage
+            if (!submissionSaved) {
+                localStorage.setItem('examSubmission_' + sessionId, JSON.stringify(submission));
+                
+                // Also save to a completed exams list
+                let completedExams = JSON.parse(localStorage.getItem('completedExams') || '[]');
+                if (!completedExams.includes(sessionId)) {
+                    completedExams.push(sessionId);
+                    localStorage.setItem('completedExams', JSON.stringify(completedExams));
+                }
+            }
+
+            alert(`Exam submitted successfully!\nScore: ${score}% (${correctCount}/${totalQuestions} correct)`);
+            window.location.href = 'exam-session.html';
+        }
+
+        function exitExam() {
+            if (confirm('Are you sure you want to exit? Your progress will be lost.')) {
+                window.location.href = 'exam-session.html';
+            }
+        }
+
+        // Warn before leaving
+        window.onbeforeunload = function() {
+            return 'You have an exam in progress. Are you sure you want to leave?';
+        };
+
+        // Load exam on page load
+        document.addEventListener('DOMContentLoaded', loadExam);
+    </script>
+</body>
+</html>

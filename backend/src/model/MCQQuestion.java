@@ -2,10 +2,6 @@ package model;
 
 import java.util.List;
 
-/**
- * Represents a Multiple Choice Question (MCQ).
- * Demonstrates Inheritance by extending Question.
- */
 public class MCQQuestion extends Question {
     private List<String> options;
     private String correctAnswer;
