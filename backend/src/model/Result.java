@@ -93,7 +93,13 @@ public class Result {
     public String getFeedback() { return feedback; }
     public void setFeedback(String feedback) { this.feedback = feedback; }
 
-   
+    public String toFileString() {
+        String dateStr = submittedAt != null ? submittedAt.toString() : LocalDateTime.now().toString();
+        return resultId + "|" + studentId + "|" + studentName + "|" + examId + "|" + examTitle + "|" +
+               courseCode + "|" + sessionId + "|" + totalQuestions + "|" + correctAnswers + "|" +
+               totalMarks + "|" + obtainedMarks + "|" + percentage + "|" + grade + "|" + status + "|" +
+               dateStr + "|" + feedback;
+    }
 
     public static Result fromFileString(String line) {
         String[] parts = line.split("\\|");
