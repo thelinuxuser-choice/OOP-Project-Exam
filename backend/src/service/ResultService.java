@@ -26,6 +26,17 @@ public class ResultService {
         }
         return results;
     }
+    
+    public List<Result> getResultsByStudent(String studentId) {
+        List<Result> all = getAllResults();
+        List<Result> studentResults = new ArrayList<>();
+        for (Result r : all) {
+            if (r.getStudentId().equals(studentId)) {
+                studentResults.add(r);
+            }
+        }
+        return studentResults;
+    }
 
     
     public List<Result> getResultsByExam(String examId) {
