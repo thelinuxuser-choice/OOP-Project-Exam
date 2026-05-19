@@ -1,6 +1,6 @@
-U006,Admin,admin@gmail.com,000000,ADMIN
-U007,Sukuna,sukuna@gmail.com,000000,ADMIN
-U008,Kakashi,kakashi@gmail.com,123456,LECTURER
-U009,Danush,danush@gmail.com,123456,STUDENT
-U010,Piyumal,Piyumal@gmail.com,1234,STUDENT
-U011,Amod,amod@gmail.com,123456,STUDENT
+U001,Admin,admin@gmail.com,000000,ADMIN
+U002,Student,student@gmail.com,123456,STUDENT
+U003,Lecturer,lecturer@gmail.com,123456,LECTURER
+U004,Danush,danush@gmail.com,123456,STUDENT
+U005,Piyumal,Piyumal@gmail.com,1234,STUDENT
+U006,Amod,amod@gmail.com,123456,STUDENT
